@@ -1,5 +1,7 @@
-import { getInputFileName } from "../../utils/react";
+import { api } from "~/utils/api";
+
 export default function puzzle() {
-  const fileName = getInputFileName(2022, 1);
-  return <div>{fileName}</div>;
+  let inputFile = api.file.getInputFile.useQuery({ year: 2022, day: 1 });
+  console.log(inputFile.data);
+  return <div>hello</div>;
 }
