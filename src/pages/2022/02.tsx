@@ -5,8 +5,7 @@ import Results from "../../components/Results";
 export default function Day02() {
   const [part1, setPart1] = useState(0);
   const [part2, setPart2] = useState(0);
-  const inputFile = api.file.getInputFile.useQuery({ year: 2022, day: 2 });
-  const data = inputFile.data;
+  const data = api.file.getInputFile.useQuery({ year: 2022, day: 2 }).data;
 
   const processData = () => {
     if (data) {
