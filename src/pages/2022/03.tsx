@@ -22,7 +22,7 @@ export default function Day03() {
     return letters.indexOf(letter) + 1;
   };
 
-  const processData = () => {
+  const processData = (data: string[] | undefined) => {
     if (data) {
       let totalPriority: number = 0;
       data.forEach((row: string) => {
@@ -68,7 +68,9 @@ export default function Day03() {
 
   return (
     <Results
-      handleGetResults={processData}
+      handleGetResults={() => {
+        processData(data);
+      }}
       part1={part1}
       part2={part2}
       day={3}

@@ -17,7 +17,7 @@ export default function Day04() {
 
   type Range = [number, number];
 
-  const processData = () => {
+  const processData = (data: string[] | undefined) => {
     if (data) {
       let part1Count: number = 0;
       let part2Count: number = 0;
@@ -59,7 +59,9 @@ export default function Day04() {
 
   return (
     <Results
-      handleGetResults={processData}
+      handleGetResults={() => {
+        processData(data);
+      }}
       part1={part1}
       part2={part2}
       day={4}

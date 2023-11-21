@@ -6,8 +6,9 @@ export default function Day02() {
   const [part1, setPart1] = useState(0);
   const [part2, setPart2] = useState(0);
   const data = api.file.getInputFile.useQuery({ year: 2022, day: 2 }).data;
+  const exampleData = ["A Y", "B X", "C Z"];
 
-  const processData = () => {
+  const processData = (data: string[] | undefined) => {
     if (data) {
       let part1Score: number = 0;
       let part2Score: number = 0;
@@ -129,7 +130,9 @@ export default function Day02() {
 
   return (
     <Results
-      handleGetResults={processData}
+      handleGetResults={() => {
+        processData(data);
+      }}
       part1={part1}
       part2={part2}
       day={2}
