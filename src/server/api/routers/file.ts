@@ -8,10 +8,12 @@ export const fileRouter = createTRPCRouter({
     .input(z.object({ year: z.number(), day: z.number() }))
     .query(async ({ input }) => {
       let fileName = getInputFileName(input.year, input.day);
-      let inputFile = fs.readFileSync(fileName, {
+      let data = fs.readFileSync(fileName, {
         encoding: "utf8",
         flag: "r",
       });
-      return inputFile.split("\n");
+      let lines = data.split("\n");
+      if (lines[lines.length - 1] === "") lines.splice(-1);
+      return lines;
     }),
 });

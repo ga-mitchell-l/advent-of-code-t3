@@ -9,20 +9,20 @@ export default function Day03() {
   const letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(
     "",
   );
+  const exampleData = [
+    "vJrwpWtwJgWrhcsFMMfFFhFp",
+    "jqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL",
+    "PmmdzqPrVvPwwTWBwg",
+    "wMqvLMZHhHMvwLHjbvcjnnSBnvTQFn",
+    "ttgJtRGJQctTZtZT",
+    "CrZsJsPPZsGzwwsLwLmpwMDw",
+  ];
 
   const getPriority = (letter: string): number => {
     return letters.indexOf(letter) + 1;
   };
 
   const processData = () => {
-    const exampleData = [
-      "vJrwpWtwJgWrhcsFMMfFFhFp",
-      "jqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL",
-      "PmmdzqPrVvPwwTWBwg",
-      "wMqvLMZHhHMvwLHjbvcjnnSBnvTQFn",
-      "ttgJtRGJQctTZtZT",
-      "CrZsJsPPZsGzwwsLwLmpwMDw",
-    ];
     if (data) {
       let totalPriority: number = 0;
       data.forEach((row: string) => {

@@ -17,6 +17,28 @@ export default function Day04() {
 
   const processData = () => {
     if (data) {
+      let count: number = 0;
+      data.forEach((row: string) => {
+        let i: number = 0;
+        let elfArray = [...Array(2)];
+        const elves: string[] = row.split(",");
+        elves.forEach((elf: string) => {
+          elfArray[i] = elf.split("-");
+          i += 1;
+        });
+        const A: number = Number(elfArray[0][0]);
+        const B: number = Number(elfArray[0][1]);
+        const C: number = Number(elfArray[1][0]);
+        const D: number = Number(elfArray[1][1]);
+
+        const leftContainsRight: boolean = C >= A && D <= B;
+        const rightContainsLeft: boolean = A >= C && B <= D;
+
+        if (leftContainsRight || rightContainsLeft) {
+          count++;
+        }
+      });
+      setPart1(count);
     }
   };
 
