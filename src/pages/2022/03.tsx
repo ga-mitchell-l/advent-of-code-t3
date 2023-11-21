@@ -2,7 +2,7 @@ import { api } from "~/utils/api";
 import { useState } from "react";
 import Results from "../../components/Results";
 
-export default function Day02() {
+export default function Day03() {
   const [part1, setPart1] = useState(0);
   const [part2, setPart2] = useState(0);
   const data = api.file.getInputFile.useQuery({ year: 2022, day: 3 }).data;
@@ -71,6 +71,7 @@ export default function Day02() {
       handleGetResults={processData}
       part1={part1}
       part2={part2}
+      day={3}
     ></Results>
   );
 }

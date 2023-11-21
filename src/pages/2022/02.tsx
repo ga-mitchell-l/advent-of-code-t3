@@ -132,6 +132,7 @@ export default function Day02() {
       handleGetResults={processData}
       part1={part1}
       part2={part2}
+      day={2}
     ></Results>
   );
 }
