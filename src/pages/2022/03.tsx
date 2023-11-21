@@ -1,6 +1,6 @@
 import { api } from "~/utils/api";
 import { useState } from "react";
-import Results from "../../components/Results";
+import Puzzle from "~/components/Puzzle";
 
 export default function Day03() {
   const [part1, setPart1] = useState(0);
@@ -67,13 +67,13 @@ export default function Day03() {
   };
 
   return (
-    <Results
+    <Puzzle
       handleGetResults={() => {
         processData(data);
       }}
       part1={part1}
       part2={part2}
       day={3}
-    ></Results>
+    ></Puzzle>
   );
 }
