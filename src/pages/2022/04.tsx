@@ -15,31 +15,46 @@ export default function Day04() {
     "2-6,4-8",
   ];
 
+  type Range = [number, number];
+
   const processData = () => {
     if (data) {
-      let count: number = 0;
+      let part1Count: number = 0;
+      let part2Count: number = 0;
       data.forEach((row: string) => {
         let i: number = 0;
         let elfArray = [...Array(2)];
         const elves: string[] = row.split(",");
         elves.forEach((elf: string) => {
-          elfArray[i] = elf.split("-");
+          elfArray[i] = elf.split("-").map(Number);
           i += 1;
         });
-        const A: number = Number(elfArray[0][0]);
-        const B: number = Number(elfArray[0][1]);
-        const C: number = Number(elfArray[1][0]);
-        const D: number = Number(elfArray[1][1]);
 
-        const leftContainsRight: boolean = C >= A && D <= B;
-        const rightContainsLeft: boolean = A >= C && B <= D;
+        if (RangeContains(elfArray[0], elfArray[1])) {
+          part1Count++;
+        }
 
-        if (leftContainsRight || rightContainsLeft) {
-          count++;
+        if (RangeOverlaps(elfArray[0], elfArray[1])) {
+          part2Count++;
         }
       });
-      setPart1(count);
+      setPart1(part1Count);
+      setPart2(part2Count);
     }
+  };
+
+  const RangeContains = (rangeX: Range, rangeY: Range) => {
+    return (
+      (rangeY[0] >= rangeX[0] && rangeY[1] <= rangeX[1]) ||
+      (rangeX[0] >= rangeY[0] && rangeX[1] <= rangeY[1])
+    );
+  };
+
+  const RangeOverlaps = (rangeX: Range, rangeY: Range) => {
+    return (
+      (rangeX[0] <= rangeY[0] && rangeY[0] <= rangeX[1]) ||
+      (rangeY[0] <= rangeX[0] && rangeX[0] <= rangeY[1])
+    );
   };
 
   return (
