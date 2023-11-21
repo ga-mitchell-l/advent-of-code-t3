@@ -1,6 +1,5 @@
 import { api } from "~/utils/api";
 import { useState } from "react";
-import Results from "../../components/Results";
 import Puzzle from "~/components/Puzzle";
 
 export default function Day04() {
