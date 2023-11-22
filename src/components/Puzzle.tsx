@@ -6,6 +6,7 @@ import Results from "./Results";
 const Puzzle = ({ handleGetResults, day, results }: PuzzleProps) => {
   return (
     <div>
+      <h1>Day {day}</h1>
       <Results
         handleGetResults={handleGetResults}
         part1={results.part1}
