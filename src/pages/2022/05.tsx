@@ -40,22 +40,18 @@ export default function Day05() {
 
   const processData = (data: string[] | undefined) => {
     if (data) {
-      let part1Count: number = 0;
-      let part2Count: number = 0;
-
       const crateIndex = data.indexOf("");
       const crateDiagram = data.slice(0, crateIndex - 1).reverse();
       const moves = data.slice(crateIndex + 1, data.length);
 
       const numOfColumns = getNumOfColumns(crateIndex, data);
       let processedCrates = getProcessedCrates(numOfColumns, crateDiagram);
-      let part2Crates = processedCrates.slice();
-      console.log("starting crates");
-      console.log(processedCrates);
+      var part2Crates = processedCrates.map(function (arr) {
+        return arr.slice();
+      });
 
       const regex = /\d+/g;
       moves.forEach((moveRow: string) => {
-        console.log(moveRow);
         let match = [...moveRow.matchAll(regex)];
 
         const move = Number(match?.[0]);
@@ -63,25 +59,37 @@ export default function Day05() {
         const from = Number(match?.[1]) - 1;
         const to = Number(match?.[2]) - 1;
 
+        // part 1
         for (let i = 0; i < move; i++) {
           const removed = processedCrates[from].pop();
           processedCrates[to].push(removed);
         }
 
-        console.log(processedCrates);
-      });
-
-      let part1 = "";
-      // could do a reduce here but then I would have to type processedCrates properly
-      processedCrates.forEach((column: Array<string>) => {
-        part1 += column.at(-1);
+        // part 2
+        let stackFrom: string[] = part2Crates[from];
+        let part2removed: string[] = stackFrom.splice(
+          stackFrom.length - move,
+          move,
+        );
+        let stackTo: string[] = part2Crates[to];
+        stackTo.splice(stackTo.length, 0, ...part2removed);
       });
 
       setParts({
-        part1: part1,
-        part2: part2Count,
+        part1: getCrateOutput(processedCrates),
+        part2: getCrateOutput(part2Crates),
       });
     }
+  };
+
+  const getCrateOutput = (crates: any[]): string => {
+    // could do a reduce here but then I would have to type processedCrates properly
+    let result = "";
+    crates.forEach((column: Array<string>) => {
+      result += column.at(-1);
+    });
+
+    return result;
   };
 
   return (
