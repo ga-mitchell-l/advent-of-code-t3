@@ -1,10 +1,14 @@
 import { api } from "~/utils/api";
 import { useState } from "react";
 import Puzzle from "~/components/Puzzle";
+import { PartResults } from "~/classes/PuzzleResults";
 
 export default function Day04() {
-  const [part1, setPart1] = useState(0);
-  const [part2, setPart2] = useState(0);
+  const [parts, setParts] = useState<PartResults>({
+    part1: 0,
+    part2: 0,
+  });
+
   const data = api.file.getInputFile.useQuery({ year: 2022, day: 4 }).data;
   const exampleData: string[] = [
     "2-4,6-8",
@@ -38,8 +42,10 @@ export default function Day04() {
           part2Count++;
         }
       });
-      setPart1(part1Count);
-      setPart2(part2Count);
+      setParts({
+        part1: part1Count,
+        part2: part2Count,
+      });
     }
   };
 
@@ -62,9 +68,8 @@ export default function Day04() {
       handleGetResults={() => {
         processData(data);
       }}
-      part1={part1}
-      part2={part2}
       day={4}
+      results={parts}
     ></Puzzle>
   );
 }

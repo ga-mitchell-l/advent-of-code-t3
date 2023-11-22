@@ -1,16 +1,15 @@
 import React from "react"; // we need this to make JSX compile
-import { PuzzleProps, ResultProps } from "../types/Props";
-import Link from "next/link";
+import { PuzzleProps } from "../types/Props";
 import Navigation from "./Navigation";
 import Results from "./Results";
 
-const Puzzle = ({ handleGetResults, part1, part2, day }: PuzzleProps) => {
+const Puzzle = ({ handleGetResults, day, results }: PuzzleProps) => {
   return (
     <div>
       <Results
         handleGetResults={handleGetResults}
-        part1={part1}
-        part2={part2}
+        part1={results.part1}
+        part2={results.part2}
         type="puzzle"
       />
       <Navigation day={day} />

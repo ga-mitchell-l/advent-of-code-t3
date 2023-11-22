@@ -1,10 +1,13 @@
 import { api } from "~/utils/api";
 import { useState } from "react";
 import Puzzle from "~/components/Puzzle";
+import { PartResults } from "~/classes/PuzzleResults";
 
 export default function Day02() {
-  const [part1, setPart1] = useState(0);
-  const [part2, setPart2] = useState(0);
+  const [parts, setParts] = useState<PartResults>({
+    part1: 0,
+    part2: 0,
+  });
   const data = api.file.getInputFile.useQuery({ year: 2022, day: 2 }).data;
   const exampleData = ["A Y", "B X", "C Z"];
 
@@ -106,8 +109,10 @@ export default function Day02() {
         }
       });
 
-      setPart1(part1Score);
-      setPart2(part2Score);
+      setParts({
+        part1: part1Score,
+        part2: part2Score,
+      });
     }
   };
 
@@ -133,9 +138,8 @@ export default function Day02() {
       handleGetResults={() => {
         processData(data);
       }}
-      part1={part1}
-      part2={part2}
       day={2}
+      results={parts}
     ></Puzzle>
   );
 }

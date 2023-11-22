@@ -1,10 +1,13 @@
 import { api } from "~/utils/api";
 import { useState } from "react";
 import Puzzle from "~/components/Puzzle";
+import { PartResults } from "~/classes/PuzzleResults";
 
 export default function Day03() {
-  const [part1, setPart1] = useState(0);
-  const [part2, setPart2] = useState(0);
+  const [parts, setParts] = useState<PartResults>({
+    part1: 0,
+    part2: 0,
+  });
   const data = api.file.getInputFile.useQuery({ year: 2022, day: 3 }).data;
   const letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(
     "",
@@ -40,7 +43,6 @@ export default function Day03() {
           totalPriority += getPriority(letter);
         });
       });
-      setPart1(totalPriority);
 
       let teamPriority: number = 0;
       for (let i = 0; i < data.length; i += 3) {
@@ -62,7 +64,11 @@ export default function Day03() {
           console.log("team priority: " + getPriority(letter));
         });
       }
-      setPart2(teamPriority);
+
+      setParts({
+        part1: totalPriority,
+        part2: teamPriority,
+      });
     }
   };
 
@@ -71,9 +77,8 @@ export default function Day03() {
       handleGetResults={() => {
         processData(data);
       }}
-      part1={part1}
-      part2={part2}
       day={3}
+      results={parts}
     ></Puzzle>
   );
 }
