@@ -14,7 +14,7 @@ export class PuzzleResults {
   }
 }
 
-type PartResults = {
+export type PartResults = {
   part1: number;
   part2: number;
 };

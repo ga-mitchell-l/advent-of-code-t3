@@ -1,10 +1,14 @@
 import { api } from "~/utils/api";
 import { useState } from "react";
 import Puzzle from "~/components/Puzzle";
+import { PartResults } from "~/classes/PuzzleResults";
+import Puzzle2 from "~/components/Puzzle2";
 
 export default function Day01() {
-  const [part1, setPart1] = useState(0);
-  const [part2, setPart2] = useState(0);
+  const [parts, setParts] = useState<PartResults>({
+    part1: 0,
+    part2: 0,
+  });
   const data = api.file.getInputFile.useQuery({ year: 2022, day: 1 }).data;
   const exampleData = [
     "1000",
@@ -36,7 +40,6 @@ export default function Day01() {
         }
       });
       const maxCalories: number = Math.max(...calories);
-      setPart1(maxCalories);
 
       const sortedCalories: number[] = calories
         .sort(function (a, b) {
@@ -49,17 +52,19 @@ export default function Day01() {
         0,
       );
 
-      setPart2(top3CaloriesSum);
+      setParts({
+        part1: maxCalories,
+        part2: top3CaloriesSum,
+      });
     }
   };
   return (
-    <Puzzle
+    <Puzzle2
       handleGetResults={() => {
         processData(data);
       }}
-      part1={part1}
-      part2={part2}
+      results={parts}
       day={1}
-    ></Puzzle>
+    ></Puzzle2>
   );
 }
