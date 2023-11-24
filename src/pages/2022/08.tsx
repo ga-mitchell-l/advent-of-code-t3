@@ -15,11 +15,8 @@ export default function Day08() {
 
   class Tree {
     height: number;
-    visibleLeft: boolean;
-    visibleRight: boolean;
-    visibleUp: boolean;
-    visibleDown: boolean;
     visible: boolean;
+    scenicScore: number;
   }
 
   const processData = (data: string[] | undefined) => {
@@ -36,47 +33,96 @@ export default function Day08() {
           let newTree = new Tree();
           let height = treeRowRaw[j];
           newTree.height = height;
+          let visibleUp: boolean;
+          let visibleDown: boolean;
+          let visibleLeft: boolean;
+          let visibleRight: boolean;
+
+          let scenicUp: number;
+          let scenicDown: number;
+          let scenicLeft: number;
+          let scenicRight: number;
 
           // vertical
           let column = data.map(function (value, index) {
             return Number(value[j]);
           });
-          console.log(column);
 
           if (i == 0) {
-            newTree.visibleUp = true;
+            visibleUp = true;
+            scenicUp = 0;
           } else {
-            let maxTreesUp = Math.max(...column.slice(0, i));
-            newTree.visibleUp = maxTreesUp < height;
+            let treesUp = column.slice(0, i);
+            let maxTreesUp = Math.max(...treesUp);
+            visibleUp = maxTreesUp < height;
+
+            // part 2
+            let logicUp = treesUp
+              .map((h) => {
+                return h < height;
+              })
+              .reverse();
+            let indexSight = logicUp.indexOf(false);
+            scenicUp = indexSight == -1 ? treesUp.length : indexSight + 1;
           }
 
           if (i == gridSize - 1) {
-            newTree.visibleDown = true;
+            visibleDown = true;
+            scenicDown = 0;
           } else {
-            let maxTreesDown = Math.max(...column.slice(i + 1, gridSize));
-            newTree.visibleDown = maxTreesDown < height;
+            let treesDown = column.slice(i + 1, gridSize);
+            let maxTreesDown = Math.max(...treesDown);
+            visibleDown = maxTreesDown < height;
+
+            // part 2
+            let logicDown = treesDown.map((h) => {
+              return h < height;
+            });
+
+            let indexSight = logicDown.indexOf(false);
+            scenicDown = indexSight == -1 ? treesDown.length : indexSight + 1;
           }
           // horizonal
 
           if (j == 0) {
-            newTree.visibleLeft = true;
+            visibleLeft = true;
+            scenicLeft = 0;
           } else {
-            let maxTreesLeft = Math.max(...treeRowRaw.slice(0, j));
-            newTree.visibleLeft = maxTreesLeft < height;
+            let treesLeft = treeRowRaw.slice(0, j);
+            let maxTreesLeft = Math.max(...treesLeft);
+            visibleLeft = maxTreesLeft < height;
+
+            // part 2
+            let logicLeft = treesLeft
+              .map((h) => {
+                return h < height;
+              })
+              .reverse();
+            let indexSight = logicLeft.indexOf(false);
+            scenicLeft = indexSight == -1 ? treesLeft.length : indexSight + 1;
           }
 
           if (j == gridSize - 1) {
-            newTree.visibleRight = true;
+            visibleRight = true;
+            scenicRight = 0;
           } else {
-            let maxTreesRight = Math.max(...treeRowRaw.slice(j + 1, gridSize));
-            newTree.visibleRight = maxTreesRight < height;
+            let treesRight = treeRowRaw.slice(j + 1, gridSize);
+            let maxTreesRight = Math.max(...treesRight);
+            visibleRight = maxTreesRight < height;
+
+            // part 2
+            let logicRight = treesRight.map((otherHeight) => {
+              return otherHeight < height;
+            });
+            let indexSight = logicRight.indexOf(false);
+            scenicRight = indexSight == -1 ? treesRight.length : indexSight + 1;
           }
 
           newTree.visible =
-            newTree.visibleLeft ||
-            newTree.visibleRight ||
-            newTree.visibleUp ||
-            newTree.visibleDown;
+            visibleLeft || visibleRight || visibleUp || visibleDown;
+
+          newTree.scenicScore =
+            scenicLeft * scenicRight * scenicUp * scenicDown;
 
           treeGrid[i].push(newTree);
         }
@@ -88,9 +134,15 @@ export default function Day08() {
         0,
       );
 
+      let maxScenic = treeGrid.reduce(
+        (max, treeRow) =>
+          Math.max(max, Math.max(...treeRow.map((x) => x.scenicScore))),
+        0,
+      );
+
       setParts({
         part1: numVisibleTrees,
-        part2: part2Count,
+        part2: maxScenic,
       });
     }
   };
