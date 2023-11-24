@@ -49,8 +49,6 @@ export default function Day05() {
     if (data) {
       let fileSystem: ElfItem[] = [];
 
-      let part2Count: number = 0;
-
       data.splice(0, 1);
       fileSystem.push({ type: "dir", name: "/", children: [], parent: null });
       let root = fileSystem[0];
@@ -127,22 +125,22 @@ export default function Day05() {
       const sumSize = dirsLessThan1000.reduce((acc, dir) => acc + dir.size, 0);
 
       // part 2
-      let diskSpace = 70000000;
-      let updateSpaceNeeded = 30000000;
+      const diskSpace = 70000000;
+      const updateSpaceNeeded = 30000000;
 
-      let unusedSpace = diskSpace - getDirectorySize(root);
-      let delta = updateSpaceNeeded - unusedSpace;
+      const unusedSpace = diskSpace - getDirectorySize(root);
+      const delta = updateSpaceNeeded - unusedSpace;
 
       const getDirectoriesWithSizeBiggerThan = (size: number): ElfItem[] => {
         let dirs: ElfItem[] = [];
         const traverse = (dir: ElfItem) => {
           if (dir.type === "dir") {
-            let dirSize = getDirectorySize(dir);
+            const dirSize = getDirectorySize(dir);
             if (dirSize > size) {
               dir.size = dirSize;
               dirs.push(dir);
             }
-            for (let child of dir.children) {
+            for (const child of dir.children) {
               traverse(child);
             }
           }
@@ -152,9 +150,8 @@ export default function Day05() {
         return dirs;
       };
 
-      let deletionCandidates = getDirectoriesWithSizeBiggerThan(delta);
-      console.log(deletionCandidates);
-      let minDirectory = deletionCandidates.reduce((prev, curr) =>
+      const deletionCandidates = getDirectoriesWithSizeBiggerThan(delta);
+      const minDirectory = deletionCandidates.reduce((prev, curr) =>
         prev.size < curr.size ? prev : curr,
       );
 
