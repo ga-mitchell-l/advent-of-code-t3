@@ -2,8 +2,6 @@ import { api } from "~/utils/api";
 import { useState } from "react";
 import Puzzle from "~/components/Puzzle";
 import { PartResults } from "~/classes/PuzzleResults";
-import { space } from "postcss/lib/list";
-import { preconnect } from "react-dom";
 
 export default function Day05() {
   const [parts, setParts] = useState<PartResults>({
