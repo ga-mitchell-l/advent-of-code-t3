@@ -44,7 +44,6 @@ export default function Day05() {
 
   const processData = (data: string[] | undefined) => {
     if (data) {
-      let part2Count: number = 0;
       let lastPositions = Array<Position>(10);
       for (let i = 0; i < lastPositions.length; i++) {
         lastPositions[i] = { i: 0, j: 0 };
