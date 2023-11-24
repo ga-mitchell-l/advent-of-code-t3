@@ -15,6 +15,6 @@ export class PuzzleResults {
 }
 
 export type PartResults = {
-  part1: any;
-  part2: any;
+  part1: number | string;
+  part2: number | string;
 };
