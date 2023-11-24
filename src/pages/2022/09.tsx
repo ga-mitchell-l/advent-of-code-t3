@@ -21,46 +21,59 @@ export default function Day05() {
     "L 5",
     "R 2",
   ];
+  const exampleData2: string[] = [
+    "R 5",
+    "U 8",
+    "L 8",
+    "D 3",
+    "R 17",
+    "D 10",
+    "L 25",
+    "U 20",
+  ];
 
   type Position = {
     i: number;
     j: number;
   };
 
-  let hPosition = new Array<Position>();
-  hPosition.push({ i: 0, j: 0 });
   let tPosition = new Array<Position>();
   tPosition.push({ i: 0, j: 0 });
+  let ninthPosition = new Array<Position>();
+  ninthPosition.push({ i: 0, j: 0 });
 
   const processData = (data: string[] | undefined) => {
     if (data) {
       let part2Count: number = 0;
+      let lastPositions = Array<Position>(10);
+      for (let i = 0; i < lastPositions.length; i++) {
+        lastPositions[i] = { i: 0, j: 0 };
+      }
 
       data.forEach((row: string) => {
         const [direction, distanceString] = row.split(" ");
         let distance = Number(distanceString);
 
         for (let d = 1; d <= distance; d++) {
-          const lastHPosition = hPosition[hPosition.length - 1];
-          const lastTPosition = tPosition[tPosition.length - 1];
+          lastPositions[0] = getNextHPosition(lastPositions[0], direction);
+          for (let i = 1; i < lastPositions.length; i++) {
+            lastPositions[i] = getNextTPosition(
+              lastPositions[i],
+              lastPositions[i - 1],
+            );
+          }
 
-          let nextHPosition = getNextHPosition(lastHPosition, direction);
-          let nextTPosition = getNextTPosition(lastTPosition, nextHPosition);
-
-          hPosition.push(nextHPosition);
-          tPosition.push(nextTPosition);
+          tPosition.push(lastPositions[1]);
+          ninthPosition.push(lastPositions[9]);
         }
       });
 
-      const stringTPosition = tPosition.map(function (value) {
-        return value.i + "," + value.j;
-      });
-
-      let positionCount = new Set(stringTPosition).size;
+      let positionCount = getPositionCount(tPosition);
+      let ninthPositionCount = getPositionCount(ninthPosition);
 
       setParts({
         part1: positionCount,
-        part2: part2Count,
+        part2: ninthPositionCount,
       });
     }
   };
@@ -74,6 +87,14 @@ export default function Day05() {
       results={parts}
     ></Puzzle>
   );
+
+  function getPositionCount(tPosition: Position[]) {
+    const stringTPosition = tPosition.map(function (value) {
+      return value.i + "," + value.j;
+    });
+    let positionCount = new Set(stringTPosition).size;
+    return positionCount;
+  }
 
   function getNextHPosition(
     lastHPosition: { i: number; j: number },
