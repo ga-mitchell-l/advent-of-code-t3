@@ -9,8 +9,14 @@ import { PuzzleResults } from "~/classes/PuzzleResults";
  * Retrieve a puzzle input as an array of lines.
  */
 
-export const getInputFileName = (year: number, day: number): string => {
-  return `./src/input/adventofcode.com_${year}_day_${day}_input.txt`;
+export const getInputFileName = (
+  year: number,
+  day: number,
+  example: boolean = false,
+): string => {
+  return `./src/input/adventofcode.com_${year}_day_${day}_input${
+    example ? "_example" : ""
+  }.txt`;
 };
 
 export const UpdateResults = (

@@ -5,9 +5,15 @@ import fs from "fs";
 
 export const fileRouter = createTRPCRouter({
   getInputFile: publicProcedure
-    .input(z.object({ year: z.number(), day: z.number() }))
+    .input(
+      z.object({
+        year: z.number(),
+        day: z.number(),
+        example: z.boolean().default(false),
+      }),
+    )
     .query(async ({ input }) => {
-      let fileName = getInputFileName(input.year, input.day);
+      let fileName = getInputFileName(input.year, input.day, input.example);
       let data = fs.readFileSync(fileName, {
         encoding: "utf8",
         flag: "r",
