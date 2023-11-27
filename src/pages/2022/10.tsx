@@ -27,21 +27,26 @@ export default function Day10() {
       let inputLineNumber = 0;
       let previousCmd = "";
       let signalStrength = {};
+      let CRT = new Array<Array<string>>(6);
+
+      for (let i = 0; i < CRT.length; i++) {
+        CRT[i] = new Array<string>(40).fill("");
+      }
 
       while (data[inputLineNumber]) {
-        console.log("_____________");
         signalStrength[cycle] = x * cycle;
+        let CRTi = (cycle - 1) % 40;
+        let CRTj = Math.floor((cycle - 1) / 40);
 
-        console.log(data[inputLineNumber]);
+        let spriteInPixel = x - 1 == CRTi || x == CRTi || x + 1 == CRTi;
+        CRT[CRTj][CRTi] = spriteInPixel ? "#" : ".";
+
         if (previousCmd) {
-          console.log("previous cmd: " + previousCmd);
-          // set previous command to nothing
           inputLineNumber++;
           const [_, numerator] = previousCmd.split(" ");
           x += Number(numerator);
           previousCmd = "";
         } else {
-          console.log("no previous cmd");
           const [command, _] = data[inputLineNumber].split(" ");
           if (command == "noop") {
             inputLineNumber++;
@@ -49,21 +54,18 @@ export default function Day10() {
             previousCmd = data[inputLineNumber];
           }
         }
-        // signalStrength[cycle] = x * cycle;
-        console.log("cycle: " + cycle);
-        console.log("x: " + x);
-        console.log("signal strength: " + signalStrength[cycle]);
 
         cycle++;
       }
 
-      const signalStrengthSum =
-        signalStrength[20] +
-        signalStrength[60] +
-        signalStrength[100] +
-        signalStrength[140] +
-        signalStrength[180] +
-        signalStrength[220];
+      let signalStrengthSum = 0;
+      for (let i = 20; i <= 220; i += 40) {
+        signalStrengthSum += signalStrength[i];
+      }
+
+      CRT.forEach((row) => {
+        console.log(row.join());
+      });
 
       setParts({
         part1: signalStrengthSum,
