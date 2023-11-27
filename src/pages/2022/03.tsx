@@ -62,7 +62,6 @@ export default function Day03() {
 
         intersection2.forEach((letter: string) => {
           teamPriority += getPriority(letter);
-          console.log("team priority: " + getPriority(letter));
         });
       }
 
