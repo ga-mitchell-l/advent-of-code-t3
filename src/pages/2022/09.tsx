@@ -124,22 +124,20 @@ export default function Day05() {
     let iDiff = nextHPosition.i - lastTPosition.i;
     let jDiff = nextHPosition.j - lastTPosition.j;
 
-    if (!iTheSame && !jTheSame) {
-      if (Math.abs(jDiff) > 1 || Math.abs(iDiff) > 1) {
-        // move diagonally
-        nextTPosition.i += 1 * Math.sign(iDiff);
-        nextTPosition.j += 1 * Math.sign(jDiff);
-      }
-    } else if (!iTheSame) {
+    if (
+      !iTheSame &&
+      !jTheSame &&
+      (Math.abs(jDiff) > 1 || Math.abs(iDiff) > 1)
+    ) {
+      // move diagonally
+      nextTPosition.i += 1 * Math.sign(iDiff);
+      nextTPosition.j += 1 * Math.sign(jDiff);
+    } else if (!iTheSame && Math.abs(iDiff) > 1) {
       // moved horizontally
-      if (Math.abs(iDiff) > 1) {
-        nextTPosition.i += 1 * Math.sign(iDiff);
-      }
-    } else if (!jTheSame) {
+      nextTPosition.i += 1 * Math.sign(iDiff);
+    } else if (!jTheSame && Math.abs(jDiff) > 1) {
       // moved vertically
-      if (Math.abs(jDiff) > 1) {
-        nextTPosition.j += 1 * Math.sign(jDiff);
-      }
+      nextTPosition.j += 1 * Math.sign(jDiff);
     }
     return nextTPosition;
   }
