@@ -28,7 +28,7 @@ export default function Day04() {
       let part2Count: number = 0;
       data.forEach((row: string) => {
         let i: number = 0;
-        let elfArray = [...Array(2)];
+        let elfArray = Array(2);
         const elves: string[] = row.split(",");
         elves.forEach((elf: string) => {
           elfArray[i] = elf.split("-").map(Number);
