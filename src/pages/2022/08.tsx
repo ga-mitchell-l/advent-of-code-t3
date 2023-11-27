@@ -128,7 +128,6 @@ export default function Day08() {
         }
       }
 
-      console.log(treeGrid);
       let numVisibleTrees = treeGrid.reduce(
         (sum, treeRow) => sum + treeRow.filter((t) => t.visible).length,
         0,

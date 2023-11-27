@@ -155,8 +155,6 @@ export default function Day07() {
         prev.size < curr.size ? prev : curr,
       );
 
-      console.log(root);
-
       setParts({
         part1: sumSize,
         part2: minDirectory.size,
