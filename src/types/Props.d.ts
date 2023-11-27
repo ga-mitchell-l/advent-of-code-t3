@@ -2,13 +2,14 @@ import { PartResults } from "~/classes/PuzzleResults";
 
 export type ResultProps = {
   handleGetResults: () => void;
-  part1: number;
-  part2: number;
-  type: string;
+  handleExampleGetResults: () => void;
+  part1: string | number;
+  part2: string | number;
 };
 
 export type PuzzleProps = {
   handleGetResults: () => void;
+  handleExampleGetResults: () => void;
   day: number;
   results: PartResults;
 };

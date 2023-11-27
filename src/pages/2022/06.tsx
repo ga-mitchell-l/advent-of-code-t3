@@ -27,9 +27,8 @@ export default function Day06() {
 
   return (
     <Puzzle
-      handleGetResults={() => {
-        processData(data);
-      }}
+      handleGetResults={() => processData(data)}
+      handleExampleGetResults={() => processData(exampleData)}
       day={day}
       results={parts}
     ></Puzzle>

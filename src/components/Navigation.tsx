@@ -9,11 +9,23 @@ const Navigation = ({ day }: NavigationProps) => {
   const nextPageName = (day + 1).toString().padStart(2, "0");
 
   return (
-    <div>
-      <Link href={previousPageName} className={previousClassName}>
+    <div className="space-x-2">
+      <Link
+        href={previousPageName}
+        className={
+          previousClassName +
+          " rounded bg-blue-500 px-1 py-1 font-bold text-white hover:bg-blue-700"
+        }
+      >
         Previous
       </Link>
-      <Link href={nextPageName} className={nextClassName}>
+      <Link
+        href={nextPageName}
+        className={
+          nextClassName +
+          " rounded bg-blue-500 px-1 py-1 font-bold text-white hover:bg-blue-700"
+        }
+      >
         Next
       </Link>
     </div>

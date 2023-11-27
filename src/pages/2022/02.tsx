@@ -8,7 +8,8 @@ export default function Day02() {
     part1: 0,
     part2: 0,
   });
-  const data = api.file.getInputFile.useQuery({ year: 2022, day: 2 }).data;
+  const day = 2;
+  const data = api.file.getInputFile.useQuery({ year: 2022, day: day }).data;
   const exampleData = ["A Y", "B X", "C Z"];
 
   const processData = (data: string[] | undefined) => {
@@ -135,10 +136,9 @@ export default function Day02() {
 
   return (
     <Puzzle
-      handleGetResults={() => {
-        processData(data);
-      }}
-      day={2}
+      handleGetResults={() => processData(data)}
+      handleExampleGetResults={() => processData(exampleData)}
+      day={day}
       results={parts}
     ></Puzzle>
   );
