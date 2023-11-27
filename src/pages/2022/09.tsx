@@ -3,7 +3,7 @@ import { useState } from "react";
 import Puzzle from "~/components/Puzzle";
 import { PartResults } from "~/classes/PuzzleResults";
 
-export default function Day05() {
+export default function Day09() {
   const [parts, setParts] = useState<PartResults>({
     part1: 0,
     part2: 0,
