@@ -2,7 +2,7 @@ import { api } from "~/utils/api";
 import { useState } from "react";
 import Puzzle from "~/components/Puzzle";
 import type { PartResults } from "~/classes/PuzzleResults";
-import { SortDescending } from "~/utils/react";
+import { SortDescending } from "@utils/react";
 
 export default function Day11() {
   const [parts, setParts] = useState<PartResults>({
