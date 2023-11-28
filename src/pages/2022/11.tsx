@@ -38,13 +38,20 @@ export default function Day11() {
   const processData = (data: string[] | undefined) => {
     if (data) {
       let monkeys: Monkey[] = ProcessMonkeys(data);
-      let monkeyInspections: number[] = GetInspections(20, monkeys);
+      let monkeyInspectionsPart1: number[] = GetInspections(
+        20,
+        monkeys.slice(),
+        false,
+      );
+      let monkeyInspectionsPart2: number[] = GetInspections(
+        10_000,
+        monkeys.slice(),
+        true,
+      );
 
-      const monkeyBusiness: number =
-        monkeyInspections[0] * monkeyInspections[1];
       setParts({
-        part1: monkeyBusiness,
-        part2: 0,
+        part1: getMonkeyBusiness(monkeyInspectionsPart1),
+        part2: getMonkeyBusiness(monkeyInspectionsPart2),
       });
     }
   };
@@ -58,7 +65,15 @@ export default function Day11() {
     ></Puzzle>
   );
 
-  function GetInspections(maxRounds: number, monkeys: Monkey[]): number[] {
+  function getMonkeyBusiness(inspections: number[]): number {
+    return inspections[0] * inspections[1];
+  }
+
+  function GetInspections(
+    maxRounds: number,
+    monkeys: Monkey[],
+    veryWorried: boolean,
+  ): number[] {
     let monkeyInspections = Array<number>(monkeys.length).fill(0);
 
     for (let round = 0; round < maxRounds; round++) {
@@ -76,7 +91,9 @@ export default function Day11() {
           } else {
             worryLevel = item + numValue;
           }
-          worryLevel = Math.floor(worryLevel / 3);
+          if (!veryWorried) {
+            worryLevel = Math.floor(worryLevel / 3);
+          }
 
           if (worryLevel % monkey.test.value == 0) {
             monkeys[monkey.test.trueActionMonkey].startingItems.push(
