@@ -1,5 +1,5 @@
 import React from "react"; // we need this to make JSX compile
-import { NavigationProps } from "../types/Props";
+import type { NavigationProps } from "../types/Props";
 import Link from "next/link";
 
 const Navigation = ({ day }: NavigationProps) => {

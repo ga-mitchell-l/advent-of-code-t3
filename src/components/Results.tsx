@@ -1,5 +1,5 @@
 import React from "react"; // we need this to make JSX compile
-import { ResultProps } from "../types/Props";
+import type { ResultProps } from "../types/Props";
 
 const Results = ({
   handleGetResults,

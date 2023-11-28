@@ -1,6 +1,6 @@
 import { api } from "~/utils/api";
 import { useState } from "react";
-import { PartResults } from "~/classes/PuzzleResults";
+import type { PartResults } from "~/classes/PuzzleResults";
 import Puzzle from "~/components/Puzzle";
 import { SortDescending } from "~/utils/react";
 
@@ -31,8 +31,8 @@ export default function Day01() {
   const processData = (data: string[] | undefined) => {
     if (data) {
       const numOfElves: number = data.filter((x) => x === "").length + 1;
-      let calories: number[] = Array(numOfElves).fill(0);
-      let elfIndex: number = 0;
+      const calories: number[] = Array<number>(numOfElves).fill(0);
+      let elfIndex = 0;
       data.forEach((row: string) => {
         if (row === "") {
           elfIndex++;

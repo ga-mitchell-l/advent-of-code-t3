@@ -1,7 +1,7 @@
 import { api } from "~/utils/api";
 import { useState } from "react";
 import Puzzle from "~/components/Puzzle";
-import { PartResults } from "~/classes/PuzzleResults";
+import type { PartResults } from "~/classes/PuzzleResults";
 
 export default function Day05() {
   const [parts, setParts] = useState<PartResults>({
@@ -25,13 +25,13 @@ export default function Day05() {
   ];
 
   const getNumOfColumns = (crateIndex: number, data: string[]): number => {
-    let columnsRow = data.slice(crateIndex - 1, crateIndex)[0];
+    const columnsRow = data.slice(crateIndex - 1, crateIndex)[0];
 
     if (columnsRow == undefined) {
       return 0;
     }
 
-    let columns = columnsRow
+    const columns = columnsRow
       .split(" ")
       .filter((x) => x != "")
       .map(Number);
@@ -45,14 +45,14 @@ export default function Day05() {
       const moves = data.slice(crateIndex + 1, data.length);
 
       const numOfColumns = getNumOfColumns(crateIndex, data);
-      let processedCrates = getProcessedCrates(numOfColumns, crateDiagram);
-      var part2Crates = processedCrates.map(function (arr) {
+      const processedCrates = getProcessedCrates(numOfColumns, crateDiagram);
+      const part2Crates = processedCrates.map(function (arr) {
         return arr.slice();
       });
 
       const regex = /\d+/g;
       moves.forEach((moveRow: string) => {
-        let match = [...moveRow.matchAll(regex)];
+        const match = [...moveRow.matchAll(regex)];
 
         const move = Number(match?.[0]);
         // zero based
@@ -66,12 +66,12 @@ export default function Day05() {
         }
 
         // part 2
-        let stackFrom: string[] = part2Crates[from];
-        let part2removed: string[] = stackFrom.splice(
+        const stackFrom: string[] = part2Crates[from];
+        const part2removed: string[] = stackFrom.splice(
           stackFrom.length - move,
           move,
         );
-        let stackTo: string[] = part2Crates[to];
+        const stackTo: string[] = part2Crates[to];
         stackTo.splice(stackTo.length, 0, ...part2removed);
       });
 
@@ -82,7 +82,7 @@ export default function Day05() {
     }
   };
 
-  const getCrateOutput = (crates: any[]): string => {
+  const getCrateOutput = (crates: string[][]): string => {
     // could do a reduce here but then I would have to type processedCrates properly
     let result = "";
     crates.forEach((column: Array<string>) => {
@@ -102,13 +102,13 @@ export default function Day05() {
   );
 
   function getProcessedCrates(numOfColumns: number, crateDiagram: string[]) {
-    let processedCrates = new Array(numOfColumns);
+    const processedCrates = new Array<Array<string>>(numOfColumns);
     for (let i = 0; i < numOfColumns; i++) {
       processedCrates[i] = new Array<string>();
     }
 
     crateDiagram.forEach((crateRow: string) => {
-      let columns = crateRow.split(" ");
+      const columns = crateRow.split(" ");
       let emptySpaceCount = 0; // 4 empty spaces mean one crate slot
       let columnIndex = 0;
 
@@ -120,7 +120,7 @@ export default function Day05() {
             emptySpaceCount = 0;
           }
         } else {
-          let crate = crateSpace.replace("[", "").replace("]", "");
+          const crate = crateSpace.replace("[", "").replace("]", "");
           processedCrates[columnIndex]?.push(crate);
           columnIndex++;
         }

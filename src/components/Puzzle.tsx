@@ -1,5 +1,5 @@
 import React from "react"; // we need this to make JSX compile
-import { PuzzleProps } from "../types/Props";
+import type { PuzzleProps } from "../types/Props";
 import Navigation from "./Navigation";
 import Results from "./Results";
 

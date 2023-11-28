@@ -1,7 +1,7 @@
 import { api } from "~/utils/api";
 import { useState } from "react";
 import Puzzle from "~/components/Puzzle";
-import { PartResults } from "~/classes/PuzzleResults";
+import type { PartResults } from "~/classes/PuzzleResults";
 
 export default function Day02() {
   const [parts, setParts] = useState<PartResults>({
@@ -14,11 +14,11 @@ export default function Day02() {
 
   const processData = (data: string[] | undefined) => {
     if (data) {
-      let part1Score: number = 0;
-      let part2Score: number = 0;
+      let part1Score = 0;
+      let part2Score = 0;
       //   let exampleData = ["A Y", "B X", "C Z"];
       data.forEach((row: string) => {
-        let splitRow = row.split(" ");
+        const splitRow = row.split(" ");
         // A Rock, B Paper, C Scissors
         // X Rock, Y Paper, Z Scissors
 

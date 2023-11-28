@@ -1,7 +1,7 @@
 import { api } from "~/utils/api";
 import { useState } from "react";
 import Puzzle from "~/components/Puzzle";
-import { PartResults } from "~/classes/PuzzleResults";
+import type { PartResults } from "~/classes/PuzzleResults";
 
 export default function Day03() {
   const [parts, setParts] = useState<PartResults>({
@@ -28,7 +28,7 @@ export default function Day03() {
 
   const processData = (data: string[] | undefined) => {
     if (data) {
-      let totalPriority: number = 0;
+      let totalPriority = 0;
       data.forEach((row: string) => {
         // part one
         const halfWay = Math.floor(row.length / 2);
@@ -45,7 +45,7 @@ export default function Day03() {
         });
       });
 
-      let teamPriority: number = 0;
+      let teamPriority = 0;
       for (let i = 0; i < data.length; i += 3) {
         const elfOne = data[i];
         const elfTwo = data[i + 1];
