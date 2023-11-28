@@ -125,8 +125,8 @@ export default function Day07() {
       const sumSize = dirsLessThan1000.reduce((acc, dir) => acc + dir.size, 0);
 
       // part 2
-      const diskSpace = 70000000;
-      const updateSpaceNeeded = 30000000;
+      const diskSpace = 70_000_000;
+      const updateSpaceNeeded = 30_000_000;
 
       const unusedSpace = diskSpace - getDirectorySize(root);
       const delta = updateSpaceNeeded - unusedSpace;
