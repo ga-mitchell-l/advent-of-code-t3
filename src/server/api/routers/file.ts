@@ -1,6 +1,6 @@
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { z } from "zod";
-import { getInputFileName } from "../../../utils/react";
+import { getInputFileName } from "@utils/react";
 import fs from "fs";
 
 export const fileRouter = createTRPCRouter({
