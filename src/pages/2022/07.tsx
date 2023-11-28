@@ -1,7 +1,7 @@
 import { api } from "~/utils/api";
 import { useState } from "react";
 import Puzzle from "~/components/Puzzle";
-import { PartResults } from "~/classes/PuzzleResults";
+import type { PartResults } from "~/classes/PuzzleResults";
 
 export default function Day07() {
   const [parts, setParts] = useState<PartResults>({
@@ -47,16 +47,16 @@ export default function Day07() {
 
   const processData = (data: string[] | undefined) => {
     if (data) {
-      let fileSystem: ElfItem[] = [];
+      const fileSystem: ElfItem[] = [];
 
       data.splice(0, 1);
       fileSystem.push({ type: "dir", name: "/", children: [], parent: null });
-      let root = fileSystem[0];
+      const root = fileSystem[0];
 
       const buildFileSystem = (dir: ElfItem, inputLineNumber: number) => {
         if (!data[inputLineNumber]) return;
 
-        let [first, second, third] = data[inputLineNumber].split(" ");
+        const [first, second, third] = data[inputLineNumber].split(" ");
 
         if (!isNaN(parseInt(first, 10))) {
           // file
@@ -78,10 +78,10 @@ export default function Day07() {
           });
           buildFileSystem(dir, inputLineNumber + 1);
         } else if (first === "$" && second === "cd" && third !== "..") {
-          let newDir = dir.children.find((child) => child.name === third);
+          const newDir = dir.children.find((child) => child.name === third);
           buildFileSystem(newDir, inputLineNumber + 1);
         } else if (first === "$" && second === "cd" && third === "..") {
-          let newDir = dir.parent;
+          const newDir = dir.parent;
           buildFileSystem(newDir, inputLineNumber + 1);
         } else {
           buildFileSystem(dir, inputLineNumber + 1);
@@ -95,7 +95,7 @@ export default function Day07() {
         if (dir.type === "file") {
           return dir.size;
         } else {
-          for (let child of dir.children) {
+          for (const child of dir.children) {
             size += getDirectorySize(child);
           }
         }
@@ -103,15 +103,15 @@ export default function Day07() {
       };
 
       const getDirectoriesWithSizeLessThan = (size: number): ElfItem[] => {
-        let dirs: ElfItem[] = [];
+        const dirs: ElfItem[] = [];
         const traverse = (dir: ElfItem) => {
           if (dir.type === "dir") {
-            let dirSize = getDirectorySize(dir);
+            const dirSize = getDirectorySize(dir);
             if (dirSize < size) {
               dir.size = dirSize;
               dirs.push(dir);
             }
-            for (let child of dir.children) {
+            for (const child of dir.children) {
               traverse(child);
             }
           }
@@ -132,7 +132,7 @@ export default function Day07() {
       const delta = updateSpaceNeeded - unusedSpace;
 
       const getDirectoriesWithSizeBiggerThan = (size: number): ElfItem[] => {
-        let dirs: ElfItem[] = [];
+        const dirs: ElfItem[] = [];
         const traverse = (dir: ElfItem) => {
           if (dir.type === "dir") {
             const dirSize = getDirectorySize(dir);

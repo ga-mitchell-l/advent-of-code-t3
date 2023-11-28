@@ -1,7 +1,7 @@
 import { api } from "~/utils/api";
 import { useState } from "react";
 import Puzzle from "~/components/Puzzle";
-import { PartResults } from "~/classes/PuzzleResults";
+import type { PartResults } from "~/classes/PuzzleResults";
 
 export default function Day10() {
   const [parts, setParts] = useState<PartResults>({
@@ -26,8 +26,8 @@ export default function Day10() {
       let x = 1;
       let inputLineNumber = 0;
       let previousCmd = "";
-      let signalStrength = {};
-      let CRT = new Array<Array<string>>(6);
+      const signalStrength = {};
+      const CRT = new Array<Array<string>>(6);
 
       for (let i = 0; i < CRT.length; i++) {
         CRT[i] = new Array<string>(40).fill("");
@@ -35,10 +35,10 @@ export default function Day10() {
 
       while (data[inputLineNumber]) {
         signalStrength[cycle] = x * cycle;
-        let CRTi = (cycle - 1) % 40;
-        let CRTj = Math.floor((cycle - 1) / 40);
+        const CRTi = (cycle - 1) % 40;
+        const CRTj = Math.floor((cycle - 1) / 40);
 
-        let spriteInPixel = x - 1 == CRTi || x == CRTi || x + 1 == CRTi;
+        const spriteInPixel = x - 1 == CRTi || x == CRTi || x + 1 == CRTi;
         CRT[CRTj][CRTi] = spriteInPixel ? "#" : ".";
 
         if (previousCmd) {

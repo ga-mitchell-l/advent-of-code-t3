@@ -8,7 +8,7 @@ export const getInputFileName = (
    */
   year: number,
   day: number,
-  example: boolean = false,
+  example = false,
 ): string => {
   return `./src/input/adventofcode.com_${year}_day_${day}_input${
     example ? "_example" : ""

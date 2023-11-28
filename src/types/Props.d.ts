@@ -1,4 +1,4 @@
-import { PartResults } from "~/classes/PuzzleResults";
+import type { PartResults } from "~/classes/PuzzleResults";
 
 export type ResultProps = {
   handleGetResults: () => void;

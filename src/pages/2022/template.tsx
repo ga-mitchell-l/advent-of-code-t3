@@ -1,7 +1,7 @@
 import { api } from "~/utils/api";
 import { useState } from "react";
 import Puzzle from "~/components/Puzzle";
-import { PartResults } from "~/classes/PuzzleResults";
+import type { PartResults } from "~/classes/PuzzleResults";
 
 export default function Day10() {
   const [parts, setParts] = useState<PartResults>({

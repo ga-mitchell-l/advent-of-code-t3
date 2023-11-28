@@ -1,7 +1,7 @@
 import { api } from "~/utils/api";
 import { useState } from "react";
 import Puzzle from "~/components/Puzzle";
-import { PartResults } from "~/classes/PuzzleResults";
+import type { PartResults } from "~/classes/PuzzleResults";
 
 export default function Day09() {
   const [parts, setParts] = useState<PartResults>({
@@ -37,21 +37,21 @@ export default function Day09() {
     j: number;
   };
 
-  let tPosition = new Array<Position>();
+  const tPosition = new Array<Position>();
   tPosition.push({ i: 0, j: 0 });
-  let ninthPosition = new Array<Position>();
+  const ninthPosition = new Array<Position>();
   ninthPosition.push({ i: 0, j: 0 });
 
   const processData = (data: string[] | undefined) => {
     if (data) {
-      let lastPositions = Array<Position>(10);
+      const lastPositions = Array<Position>(10);
       for (let i = 0; i < lastPositions.length; i++) {
         lastPositions[i] = { i: 0, j: 0 };
       }
 
       data.forEach((row: string) => {
         const [direction, distanceString] = row.split(" ");
-        let distance = Number(distanceString);
+        const distance = Number(distanceString);
 
         for (let d = 1; d <= distance; d++) {
           lastPositions[0] = getNextHPosition(lastPositions[0], direction);
@@ -67,8 +67,8 @@ export default function Day09() {
         }
       });
 
-      let positionCount = getPositionCount(tPosition);
-      let ninthPositionCount = getPositionCount(ninthPosition);
+      const positionCount = getPositionCount(tPosition);
+      const ninthPositionCount = getPositionCount(ninthPosition);
 
       setParts({
         part1: positionCount,
@@ -90,7 +90,7 @@ export default function Day09() {
     const stringTPosition = tPosition.map(function (value) {
       return value.i + "," + value.j;
     });
-    let positionCount = new Set(stringTPosition).size;
+    const positionCount = new Set(stringTPosition).size;
     return positionCount;
   }
 
@@ -98,7 +98,7 @@ export default function Day09() {
     lastHPosition: { i: number; j: number },
     direction: string,
   ) {
-    let nextHPosition = Object.assign({}, lastHPosition);
+    const nextHPosition = Object.assign({}, lastHPosition);
 
     if (direction === "U") {
       nextHPosition.j++;
@@ -116,12 +116,12 @@ export default function Day09() {
     lastTPosition: { i: number; j: number },
     nextHPosition: { i: number; j: number },
   ) {
-    let nextTPosition = Object.assign({}, lastTPosition);
+    const nextTPosition = Object.assign({}, lastTPosition);
 
-    let iTheSame = nextHPosition.i === lastTPosition.i;
-    let jTheSame = nextHPosition.j === lastTPosition.j;
-    let iDiff = nextHPosition.i - lastTPosition.i;
-    let jDiff = nextHPosition.j - lastTPosition.j;
+    const iTheSame = nextHPosition.i === lastTPosition.i;
+    const jTheSame = nextHPosition.j === lastTPosition.j;
+    const iDiff = nextHPosition.i - lastTPosition.i;
+    const jDiff = nextHPosition.j - lastTPosition.j;
 
     if (
       !iTheSame &&

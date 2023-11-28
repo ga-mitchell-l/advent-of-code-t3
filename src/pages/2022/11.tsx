@@ -1,7 +1,7 @@
 import { api } from "~/utils/api";
 import { useState } from "react";
 import Puzzle from "~/components/Puzzle";
-import { PartResults } from "~/classes/PuzzleResults";
+import type { PartResults } from "~/classes/PuzzleResults";
 import { SortDescending } from "~/utils/react";
 
 export default function Day11() {
@@ -9,7 +9,7 @@ export default function Day11() {
     part1: 0,
     part2: 0,
   });
-  const digitRegex: RegExp = /\d+/g;
+  const digitRegex = /\d+/g;
 
   const day = 11;
   const data: string[] = api.file.getInputFile.useQuery({
@@ -75,18 +75,18 @@ export default function Day11() {
     veryWorried: boolean,
   ): number[] {
     const monkeyInspections: number[] = Array<number>(monkeys.length).fill(0);
-    let monkeyModulo: number = monkeys.reduce(
+    const monkeyModulo: number = monkeys.reduce(
       (mod, monkeys) => mod * monkeys.test.value,
       1,
     );
 
     for (let round = 0; round < maxRounds; round++) {
       monkeys.forEach((monkey: Monkey) => {
-        let monkeyIndex: number = monkeys.indexOf(monkey);
+        const monkeyIndex: number = monkeys.indexOf(monkey);
         monkey.startingItems.forEach((item) => {
           monkeyInspections[monkeyIndex]++;
           let worryLevel: number;
-          let numValue: number = Number(monkey.value);
+          let numValue = Number(monkey.value);
           if (isNaN(numValue)) {
             numValue = item;
           }
@@ -121,7 +121,7 @@ export default function Day11() {
     const monkeys: Monkey[] = [];
 
     data.forEach((row) => {
-      let splitRow: string[] = row.split(" ").filter((x) => x != "");
+      const splitRow: string[] = row.split(" ").filter((x) => x != "");
       if (splitRow[0] == "Monkey") {
         // reset the monkey
         currentMonkey = {
@@ -141,7 +141,7 @@ export default function Day11() {
           .split(",")
           .map(Number);
       } else if (splitRow[0] == "Operation:") {
-        const regex: RegExp = /([*+]) (\d+|old)/g;
+        const regex = /([*+]) (\d+|old)/g;
         const match: RegExpMatchArray[] = [...row.matchAll(regex)];
         currentMonkey.operation = match[0][1];
         currentMonkey.value = match[0][2];
