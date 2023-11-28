@@ -36,12 +36,50 @@ export default function Day11() {
 
   const processData = (data: string[] | undefined) => {
     if (data) {
-      let monkeyInspections = {};
       let monkeys: Monkey[] = ProcessMonkeys(data);
+      let monkeyInspections = Array<number>(monkeys.length).fill(0);
+      let maxRounds: number = 20;
+      for (let round = 0; round < maxRounds; round++) {
+        monkeys.forEach((monkey: Monkey) => {
+          let monkeyIndex: number = monkeys.indexOf(monkey);
+          monkey.startingItems.forEach((item) => {
+            monkeyInspections[monkeyIndex]++;
+            let worryLevel: number;
+            let numValue = Number(monkey.value);
+            if (isNaN(numValue)) {
+              numValue = item;
+            }
+            if (monkey.operation == "*") {
+              worryLevel = item * numValue;
+            } else {
+              worryLevel = item + numValue;
+            }
+            worryLevel = Math.floor(worryLevel / 3);
 
-      console.log(monkeys);
+            if (worryLevel % monkey.test.value == 0) {
+              monkeys[monkey.test.trueActionMonkey].startingItems.push(
+                worryLevel,
+              );
+            } else {
+              monkeys[monkey.test.falseActionMonkey].startingItems.push(
+                worryLevel,
+              );
+            }
+          });
+          monkey.startingItems = [];
+        });
+      }
+
+      const sortedMonkeyInspections: number[] = monkeyInspections
+        .sort(function (a, b) {
+          return a - b;
+        })
+        .reverse();
+
+      const monkeyBusiness: number =
+        monkeyInspections[0] * monkeyInspections[1];
       setParts({
-        part1: 0,
+        part1: monkeyBusiness,
         part2: 0,
       });
     }
