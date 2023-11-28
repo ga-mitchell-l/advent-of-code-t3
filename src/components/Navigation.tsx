@@ -14,7 +14,7 @@ const Navigation = ({ day }: NavigationProps) => {
         href={previousPageName}
         className={
           previousClassName +
-          " rounded bg-blue-500 px-1 py-1 font-bold text-white hover:bg-blue-700"
+          " rounded border border-blue-500 bg-transparent px-1 py-1 font-bold font-semibold text-blue-700 hover:border-transparent hover:bg-blue-500 hover:text-white"
         }
       >
         Previous
@@ -23,7 +23,7 @@ const Navigation = ({ day }: NavigationProps) => {
         href={nextPageName}
         className={
           nextClassName +
-          " rounded bg-blue-500 px-1 py-1 font-bold text-white hover:bg-blue-700"
+          " rounded border border-blue-500 bg-transparent px-1 py-1 font-bold font-semibold text-blue-700 hover:border-transparent hover:bg-blue-500 hover:text-white"
         }
       >
         Next
