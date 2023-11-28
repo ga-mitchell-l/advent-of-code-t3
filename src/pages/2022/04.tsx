@@ -25,16 +25,10 @@ export default function Day04() {
       let part1Count = 0;
       let part2Count = 0;
       data.forEach((row: string) => {
-        let i = 0;
-        const elfArray: number[][] = Array<Array<number>>(2);
-        const elves: string[] = row.split(",");
-        elves.forEach((elf: string) => {
-          elfArray[i] = elf.split("-").map(Number);
-          i += 1;
-        });
+        const [elf1, elf2] = row.split(",");
 
-        const firstElf = elfArray[0];
-        const secondElf = elfArray[1];
+        const firstElf = elf1.split("-").map(Number);
+        const secondElf = elf2.split("-").map(Number);
 
         if (RangeContains(firstElf, secondElf)) {
           part1Count++;
