@@ -2,6 +2,7 @@ import { api } from "~/utils/api";
 import { useState } from "react";
 import Puzzle from "~/components/Puzzle";
 import { PartResults } from "~/classes/PuzzleResults";
+import { SortDescending } from "~/utils/react";
 
 export default function Day11() {
   const [parts, setParts] = useState<PartResults>({
@@ -37,13 +38,7 @@ export default function Day11() {
   const processData = (data: string[] | undefined) => {
     if (data) {
       let monkeys: Monkey[] = ProcessMonkeys(data);
-      let monkeyInspections = GetInspections(20, monkeys);
-
-      const sortedMonkeyInspections: number[] = monkeyInspections
-        .sort(function (a, b) {
-          return a - b;
-        })
-        .reverse();
+      let monkeyInspections: number[] = GetInspections(20, monkeys);
 
       const monkeyBusiness: number =
         monkeyInspections[0] * monkeyInspections[1];
@@ -96,7 +91,7 @@ export default function Day11() {
         monkey.startingItems = [];
       });
     }
-    return monkeyInspections;
+    return SortDescending(monkeyInspections);
   }
 
   function ProcessMonkeys(data: string[]): Monkey[] {

@@ -2,6 +2,7 @@ import { api } from "~/utils/api";
 import { useState } from "react";
 import { PartResults } from "~/classes/PuzzleResults";
 import Puzzle from "~/components/Puzzle";
+import { SortDescending } from "~/utils/react";
 
 export default function Day01() {
   const [parts, setParts] = useState<PartResults>({
@@ -41,11 +42,7 @@ export default function Day01() {
       });
       const maxCalories: number = Math.max(...calories);
 
-      const sortedCalories: number[] = calories
-        .sort(function (a, b) {
-          return a - b;
-        })
-        .reverse();
+      const sortedCalories: number[] = SortDescending(calories);
       const top3Calories: number[] = sortedCalories.slice(0, 3);
       const top3CaloriesSum: number = top3Calories.reduce(
         (sum, a) => sum + a,
