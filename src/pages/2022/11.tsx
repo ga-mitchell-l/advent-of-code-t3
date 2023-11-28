@@ -37,15 +37,15 @@ export default function Day11() {
 
   const processData = (data: string[] | undefined) => {
     if (data) {
-      let monkeys: Monkey[] = ProcessMonkeys(data);
-      let monkeyInspectionsPart1: number[] = GetInspections(
+      const monkeys: Monkey[] = ProcessMonkeys(data);
+      const monkeyInspectionsPart1: number[] = GetInspections(
         20,
-        monkeys.slice(),
+        JSON.parse(JSON.stringify(monkeys)),
         false,
       );
-      let monkeyInspectionsPart2: number[] = GetInspections(
+      const monkeyInspectionsPart2: number[] = GetInspections(
         10_000,
-        monkeys.slice(),
+        JSON.parse(JSON.stringify(monkeys)),
         true,
       );
 
@@ -74,7 +74,11 @@ export default function Day11() {
     monkeys: Monkey[],
     veryWorried: boolean,
   ): number[] {
-    let monkeyInspections = Array<number>(monkeys.length).fill(0);
+    const monkeyInspections: number[] = Array<number>(monkeys.length).fill(0);
+    let monkeyModulo: number = monkeys.reduce(
+      (mod, monkeys) => mod * monkeys.test.value,
+      1,
+    );
 
     for (let round = 0; round < maxRounds; round++) {
       monkeys.forEach((monkey: Monkey) => {
@@ -82,7 +86,7 @@ export default function Day11() {
         monkey.startingItems.forEach((item) => {
           monkeyInspections[monkeyIndex]++;
           let worryLevel: number;
-          let numValue = Number(monkey.value);
+          let numValue: number = Number(monkey.value);
           if (isNaN(numValue)) {
             numValue = item;
           }
@@ -94,6 +98,7 @@ export default function Day11() {
           if (!veryWorried) {
             worryLevel = Math.floor(worryLevel / 3);
           }
+          worryLevel = worryLevel % monkeyModulo;
 
           if (worryLevel % monkey.test.value == 0) {
             monkeys[monkey.test.trueActionMonkey].startingItems.push(
@@ -113,10 +118,10 @@ export default function Day11() {
 
   function ProcessMonkeys(data: string[]): Monkey[] {
     let currentMonkey: Monkey = null;
-    let monkeys: Monkey[] = [];
+    const monkeys: Monkey[] = [];
 
     data.forEach((row) => {
-      let splitRow = row.split(" ").filter((x) => x != "");
+      let splitRow: string[] = row.split(" ").filter((x) => x != "");
       if (splitRow[0] == "Monkey") {
         // reset the monkey
         currentMonkey = {
@@ -136,18 +141,18 @@ export default function Day11() {
           .split(",")
           .map(Number);
       } else if (splitRow[0] == "Operation:") {
-        const regex = /([*+]) (\d+|old)/g;
-        let match = [...row.matchAll(regex)];
+        const regex: RegExp = /([*+]) (\d+|old)/g;
+        const match: RegExpMatchArray[] = [...row.matchAll(regex)];
         currentMonkey.operation = match[0][1];
         currentMonkey.value = match[0][2];
       } else if (splitRow[0] == "Test:") {
-        let match = [...row.matchAll(digitRegex)];
+        const match: RegExpMatchArray[] = [...row.matchAll(digitRegex)];
         currentMonkey.test.value = Number(match[0]);
       } else if (splitRow[1] == "true:") {
-        let match = [...row.matchAll(digitRegex)];
+        const match: RegExpMatchArray[] = [...row.matchAll(digitRegex)];
         currentMonkey.test.trueActionMonkey = Number(match[0]);
       } else if (splitRow[1] == "false:") {
-        let match = [...row.matchAll(digitRegex)];
+        const match: RegExpMatchArray[] = [...row.matchAll(digitRegex)];
         currentMonkey.test.falseActionMonkey = Number(match[0]);
         monkeys.push(currentMonkey);
       }
