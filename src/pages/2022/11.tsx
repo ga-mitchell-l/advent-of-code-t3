@@ -122,7 +122,9 @@ export default function Day11() {
 
     data.forEach((row) => {
       const splitRow: string[] = row.split(" ").filter((x) => x != "");
-      if (splitRow[0] == "Monkey") {
+      const firstWord = splitRow[0];
+      const secondWord = splitRow[1];
+      if (firstWord == "Monkey") {
         // reset the monkey
         currentMonkey = {
           startingItems: [],
@@ -134,24 +136,24 @@ export default function Day11() {
             falseActionMonkey: null,
           },
         };
-      } else if (splitRow[0] == "Starting") {
+      } else if (firstWord == "Starting") {
         currentMonkey.startingItems = splitRow
           .slice(2, splitRow.length)
           .join("")
           .split(",")
           .map(Number);
-      } else if (splitRow[0] == "Operation:") {
+      } else if (firstWord == "Operation:") {
         const regex = /([*+]) (\d+|old)/g;
         const match: RegExpMatchArray[] = [...row.matchAll(regex)];
         currentMonkey.operation = match[0][1];
         currentMonkey.value = match[0][2];
-      } else if (splitRow[0] == "Test:") {
+      } else if (firstWord == "Test:") {
         const match: RegExpMatchArray[] = [...row.matchAll(digitRegex)];
         currentMonkey.test.value = Number(match[0]);
-      } else if (splitRow[1] == "true:") {
+      } else if (secondWord == "true:") {
         const match: RegExpMatchArray[] = [...row.matchAll(digitRegex)];
         currentMonkey.test.trueActionMonkey = Number(match[0]);
-      } else if (splitRow[1] == "false:") {
+      } else if (secondWord == "false:") {
         const match: RegExpMatchArray[] = [...row.matchAll(digitRegex)];
         currentMonkey.test.falseActionMonkey = Number(match[0]);
         monkeys.push(currentMonkey);

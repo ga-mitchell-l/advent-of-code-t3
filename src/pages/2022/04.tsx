@@ -33,11 +33,14 @@ export default function Day04() {
           i += 1;
         });
 
-        if (RangeContains(elfArray[0], elfArray[1])) {
+        const firstElf = elfArray[0];
+        const secondElf = elfArray[1];
+
+        if (RangeContains(firstElf, secondElf)) {
           part1Count++;
         }
 
-        if (RangeOverlaps(elfArray[0], elfArray[1])) {
+        if (RangeOverlaps(firstElf, secondElf)) {
           part2Count++;
         }
       });

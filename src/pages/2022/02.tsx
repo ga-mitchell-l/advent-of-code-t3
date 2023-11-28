@@ -24,29 +24,31 @@ export default function Day02() {
 
         if (splitRow.length == 2) {
           // part 1
-          switch (splitRow[1]) {
+          let opponent = splitRow[0];
+          let self = splitRow[1];
+          switch (self) {
             case "X":
               part1Score += 1;
-              part1Score += GetWinScore(splitRow[0], "C", "A");
+              part1Score += GetWinScore(opponent, "C", "A");
               break;
             case "Y":
               part1Score += 2;
-              part1Score += GetWinScore(splitRow[0], "A", "B");
+              part1Score += GetWinScore(opponent, "A", "B");
               break;
             case "Z":
               part1Score += 3;
-              part1Score += GetWinScore(splitRow[0], "B", "C");
+              part1Score += GetWinScore(opponent, "B", "C");
               break;
           }
 
           // part 2
           // X lose, Y draw, Z win
-          switch (splitRow[1]) {
+          switch (self) {
             case "X":
               // lose
               part2Score += 0;
 
-              switch (splitRow[0]) {
+              switch (opponent) {
                 case "A":
                   // rock
                   // means I have to play scissors
@@ -67,7 +69,7 @@ export default function Day02() {
             case "Y":
               // draw
               part2Score += 3;
-              switch (splitRow[0]) {
+              switch (opponent) {
                 case "A":
                   // rock
                   // means I have to play rock
@@ -88,7 +90,7 @@ export default function Day02() {
             case "Z":
               // win
               part2Score += 6;
-              switch (splitRow[0]) {
+              switch (opponent) {
                 case "A":
                   // rock
                   // means I have to play paper
