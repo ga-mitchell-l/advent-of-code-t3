@@ -24,8 +24,8 @@ export default function Day02() {
 
         if (splitRow.length == 2) {
           // part 1
-          let opponent = splitRow[0];
-          let self = splitRow[1];
+          const opponent = splitRow[0];
+          const self = splitRow[1];
           switch (self) {
             case "X":
               part1Score += 1;
