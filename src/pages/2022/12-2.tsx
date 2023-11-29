@@ -32,13 +32,57 @@ export default function Day10() {
 
   const processData = (data: string[] | undefined) => {
     if (data) {
+      let maxRows = data.length;
+      let maxColumns = data[0].length;
       let { elevation, visited, startPosition, endPosition } =
         ProcessInput(data);
 
-      console.log(startPosition);
-      console.log(endPosition);
+      // BFS algorithum
+      let Q: number[][] = [];
+      visited[startPosition[0]][startPosition[1]] = true;
+      Q.push([startPosition[0], startPosition[1], 0]);
+
+      let part1: number;
+      let endFound = false;
+      while (Q.length > 0 && !endFound) {
+        let current = Q.shift();
+        let currentRow = current[0];
+        let currentColumn = current[1];
+        let currentValue = current[2];
+        if (!current) break;
+
+        // get all adjacent vertices
+        directions.forEach((direction) => {
+          let next = AddPositions(current, direction);
+          let nextRow = next[0];
+          let nextColumn = next[1];
+
+          let isOffGrid = IsOffGrid(next, maxRows, maxColumns);
+          if (!isOffGrid) {
+            let isVisited = visited[nextRow][nextColumn];
+            if (!isVisited) {
+              let nextElevation = elevation[nextRow][nextColumn];
+              let currentElevation = elevation[currentRow][currentColumn];
+
+              let elevationDiff = nextElevation - currentElevation;
+              if (elevationDiff <= 1) {
+                // no climbing
+                if (nextRow == endPosition[0] && nextColumn == endPosition[1]) {
+                  // end point
+                  endFound = true;
+                  part1 = currentValue + 1;
+                } else {
+                  visited[nextRow][nextColumn] = true;
+                  Q.push([nextRow, nextColumn, currentValue + 1]);
+                }
+              }
+            }
+          }
+        });
+      }
+
       setParts({
-        part1: 0,
+        part1: part1,
         part2: 0,
       });
     }
@@ -52,6 +96,19 @@ export default function Day10() {
       results={parts}
     ></Puzzle>
   );
+
+  function IsOffGrid(position: number[], maxRows: number, maxColumns: number) {
+    return (
+      position[0] < 0 ||
+      position[1] < 0 ||
+      position[0] >= maxRows ||
+      position[1] >= maxColumns
+    );
+  }
+
+  function AddPositions(a: number[], b: number[]) {
+    return [a[0] + b[0], a[1] + b[1]];
+  }
 
   function ProcessInput(data: string[]): processedData {
     let elevation: number[][] = [];
@@ -91,14 +148,14 @@ export default function Day10() {
     endPosition: number[],
   ) {
     let rowIndex = data.indexOf(row);
-    let startIndex = row.indexOf(startChar);
-    let endIndex = row.indexOf(endChar);
+    let startColumnIndex = row.indexOf(startChar);
+    let endColumnIndex = row.indexOf(endChar);
 
-    if (startIndex > -1) {
-      startPosition = [startIndex, rowIndex];
+    if (startColumnIndex > -1) {
+      startPosition = [rowIndex, startColumnIndex];
     }
-    if (endIndex > -1) {
-      endPosition = [endIndex, rowIndex];
+    if (endColumnIndex > -1) {
+      endPosition = [rowIndex, endColumnIndex];
     }
     return { startPosition, endPosition };
   }
