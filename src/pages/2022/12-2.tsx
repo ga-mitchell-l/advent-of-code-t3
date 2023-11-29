@@ -37,53 +37,50 @@ export default function Day10() {
       let { elevation, visited, startPosition, endPosition } =
         ProcessInput(data);
 
-      // BFS algorithum
-      let Q: number[][] = [];
-      visited[startPosition[0]][startPosition[1]] = true;
-      Q.push([startPosition[0], startPosition[1], 0]);
-
       let part1: number;
-      let endFound = false;
-      while (Q.length > 0 && !endFound) {
-        let current = Q.shift();
-        let currentRow = current[0];
-        let currentColumn = current[1];
-        let currentValue = current[2];
-        if (!current) break;
+      // BFS algorithum
+      part1 = BFSAlgorithum(
+        JSON.parse(JSON.stringify(visited)),
+        startPosition,
+        maxRows,
+        maxColumns,
+        elevation,
+        endPosition,
+        part1,
+      );
 
-        // get all adjacent vertices
-        directions.forEach((direction) => {
-          let next = AddPositions(current, direction);
-          let nextRow = next[0];
-          let nextColumn = next[1];
-
-          let isOffGrid = IsOffGrid(next, maxRows, maxColumns);
-          if (!isOffGrid) {
-            let isVisited = visited[nextRow][nextColumn];
-            if (!isVisited) {
-              let nextElevation = elevation[nextRow][nextColumn];
-              let currentElevation = elevation[currentRow][currentColumn];
-
-              let elevationDiff = nextElevation - currentElevation;
-              if (elevationDiff <= 1) {
-                // no climbing
-                if (nextRow == endPosition[0] && nextColumn == endPosition[1]) {
-                  // end point
-                  endFound = true;
-                  part1 = currentValue + 1;
-                } else {
-                  visited[nextRow][nextColumn] = true;
-                  Q.push([nextRow, nextColumn, currentValue + 1]);
-                }
-              }
-            }
+      // part 2
+      let startingPositions: number[][] = [];
+      elevation.forEach((row) => {
+        let rowIndex = elevation.indexOf(row);
+        for (let columnIndex = 0; columnIndex < row.length; columnIndex++) {
+          if (row[columnIndex] == 0) {
+            let position = [rowIndex, columnIndex];
+            startingPositions.push(position);
           }
-        });
-      }
+        }
+      });
+
+      let results: number[] = [];
+      startingPositions.forEach((startPosition) => {
+        let result = BFSAlgorithum(
+          JSON.parse(JSON.stringify(visited)),
+          startPosition,
+          maxRows,
+          maxColumns,
+          elevation,
+          endPosition,
+          part1,
+        );
+
+        results.push(result);
+      });
+
+      let part2 = Math.min(...results);
 
       setParts({
         part1: part1,
-        part2: 0,
+        part2: part2,
       });
     }
   };
@@ -96,6 +93,59 @@ export default function Day10() {
       results={parts}
     ></Puzzle>
   );
+
+  function BFSAlgorithum(
+    visited: boolean[][],
+    startPosition: number[],
+    maxRows: number,
+    maxColumns: number,
+    elevation: number[][],
+    endPosition: number[],
+    part1: number,
+  ) {
+    let Q: number[][] = [];
+    visited[startPosition[0]][startPosition[1]] = true;
+    Q.push([startPosition[0], startPosition[1], 0]);
+
+    let endFound = false;
+    while (Q.length > 0 && !endFound) {
+      let current = Q.shift();
+      let currentRow = current[0];
+      let currentColumn = current[1];
+      let currentValue = current[2];
+      if (!current) break;
+
+      // get all adjacent vertices
+      directions.forEach((direction) => {
+        let next = AddPositions(current, direction);
+        let nextRow = next[0];
+        let nextColumn = next[1];
+
+        let isOffGrid = IsOffGrid(next, maxRows, maxColumns);
+        if (!isOffGrid) {
+          let isVisited = visited[nextRow][nextColumn];
+          if (!isVisited) {
+            let nextElevation = elevation[nextRow][nextColumn];
+            let currentElevation = elevation[currentRow][currentColumn];
+
+            let elevationDiff = nextElevation - currentElevation;
+            if (elevationDiff <= 1) {
+              // no climbing
+              if (nextRow == endPosition[0] && nextColumn == endPosition[1]) {
+                // end point
+                endFound = true;
+                part1 = currentValue + 1;
+              } else {
+                visited[nextRow][nextColumn] = true;
+                Q.push([nextRow, nextColumn, currentValue + 1]);
+              }
+            }
+          }
+        }
+      });
+    }
+    return part1;
+  }
 
   function IsOffGrid(position: number[], maxRows: number, maxColumns: number) {
     return (
