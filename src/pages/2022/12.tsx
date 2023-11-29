@@ -3,7 +3,7 @@ import { useState } from "react";
 import Puzzle from "~/components/Puzzle";
 import type { PartResults } from "~/classes/PuzzleResults";
 
-export default function Day12() {
+export default function Day10() {
   const [parts, setParts] = useState<PartResults>({
     part1: 0,
     part2: 0,
@@ -21,135 +21,60 @@ export default function Day12() {
     "acctuvwj",
     "abdefghi",
   ];
-
-  interface processedLocation {
-    location: number[];
-    value: number;
-    char: string;
-  }
-
-  function getSteps(processedLocation: processedLocation) {
-    let steps = 0;
-    return steps;
-  }
+  const startChar = "S";
+  const endChar = "E";
+  const directions = [
+    [0, 1], // right
+    [0, -1], // left
+    [1, 0], // up
+    [-1, 0], // down
+  ];
 
   const processData = (data: string[] | undefined) => {
     if (data) {
-      let {
-        locationS,
-        locationE,
-      }: { locationS: number[]; locationE: number[] } =
-        getStartingLocations(data);
+      let maxRows = data.length;
+      let maxColumns = data[0].length;
+      let { elevation, visited, startPosition, endPosition } =
+        ProcessInput(data);
 
-      console.log("E: " + locationE);
+      let part1: number;
+      // BFS algorithum
+      part1 = BFSAlgorithum(
+        JSON.parse(JSON.stringify(visited)),
+        startPosition,
+        maxRows,
+        maxColumns,
+        elevation,
+        endPosition,
+        part1,
+      );
 
-      let currentLocation = [locationS[0], locationS[1]];
-      let previousLocations: number[][] = [];
-      let steps = 0;
-      let eFound = false;
-      const maxSteps = 4;
+      // part 2
+      let startingPositions: number[][] = getPositionsWithElevation(
+        elevation,
+        0,
+      );
 
-      while (
-        locationS[0] != locationE[0] &&
-        locationS[1] != locationE[1] &&
-        steps < maxSteps &&
-        eFound === false
-      ) {
-        console.log("current location: " + currentLocation);
-        previousLocations.push([currentLocation[0], currentLocation[1]]);
-        let currentElevation = data[currentLocation[1]][currentLocation[0]];
-        if (currentElevation === "S") {
-          currentElevation = "a";
-        }
-
-        const currentElevationValue = currentElevation.charCodeAt(0);
-        console.log("current elevation: " + currentElevationValue);
-
-        const potentialMoves = getPotentialMoves(currentLocation);
-
-        // if any of these are E, choose that
-        const eMoves = potentialMoves.filter(
-          (x) => x[0] === locationE[0] && x[1] === locationE[1],
-        );
-        if (eMoves.length > 0) {
-          eFound = true;
-          return;
-        }
-
-        let filteredMoves = filterMoves(potentialMoves, previousLocations);
-
-        // map them to the char values
-        const moveValues = getValues(
-          filteredMoves,
-          data,
-          currentElevationValue,
+      let results: number[] = [];
+      startingPositions.forEach((startPosition) => {
+        let result = BFSAlgorithum(
+          JSON.parse(JSON.stringify(visited)),
+          startPosition,
+          maxRows,
+          maxColumns,
+          elevation,
+          endPosition,
+          part1,
         );
 
-        console.log("possible moves");
-        console.log(moveValues);
+        results.push(result);
+      });
 
-        // if there are only options that decrease in elevation, take the highest
-        if (moveValues[0].value < currentElevationValue) {
-          currentLocation = [
-            moveValues[0].location[0],
-            moveValues[0].location[1],
-          ];
-        } else {
-          const maxElevation = Math.max(
-            ...moveValues.map((loc) => {
-              return loc.value;
-            }),
-          );
+      let part2 = Math.min(...results);
 
-          const maxLocations = moveValues.filter(
-            (x) => x.value == maxElevation,
-          );
-
-          if (maxLocations.length === 1) {
-            // if there is only one location that is possible, take that one
-            currentLocation = [
-              maxLocations[0].location[0],
-              maxLocations[0].location[1],
-            ];
-          } else {
-            console.log("- - - - OH NO!!! - - - -");
-            let currentHDistance = Math.abs(currentLocation[0] - locationE[0]);
-            let currentVDistance = Math.abs(currentLocation[1] - locationE[1]);
-
-            if (currentHDistance > currentVDistance) {
-              // prioritise moving horizontally
-              console.log("moving horizontally");
-              const sortH = maxLocations
-                .sort(function (a, b) {
-                  return (
-                    Math.abs(locationE[0] - a.location[0]) -
-                    Math.abs(locationE[0] - b.location[0])
-                  );
-                })
-                .reverse();
-              currentLocation = [sortH[0].location[0], sortH[0].location[1]];
-            } else {
-              // prioritise moving vertically
-              console.log("moving vertically");
-              const sortV = maxLocations
-                .sort(function (a, b) {
-                  return (
-                    Math.abs(locationE[1] - a.location[1]) -
-                    Math.abs(locationE[1] - b.location[1])
-                  );
-                })
-                .reverse();
-
-              currentLocation = [sortV[0].location[0], sortV[0].location[1]];
-            }
-          }
-        }
-        steps++;
-        console.log("_______________");
-      }
       setParts({
-        part1: steps,
-        part2: 0,
+        part1: part1,
+        part2: part2,
       });
     }
   };
@@ -163,76 +88,136 @@ export default function Day12() {
     ></Puzzle>
   );
 
-  function getValues(
-    filteredMoves: number[][],
-    data: string[],
-    currentElevationValue: number,
+  function getPositionsWithElevation(
+    elevation: number[][],
+    matchingElevation: number,
   ) {
-    const viableValues = filteredMoves.map((move) => {
-      let temp: processedLocation = {
-        location: move,
-        value: data[move[1]][move[0]].charCodeAt(0),
-        char: data[move[1]][move[0]],
-      };
-      return temp;
+    let startingPositions: number[][] = [];
+    elevation.forEach((row) => {
+      let rowIndex = elevation.indexOf(row);
+      for (let columnIndex = 0; columnIndex < row.length; columnIndex++) {
+        if (row[columnIndex] == matchingElevation) {
+          let position = [rowIndex, columnIndex];
+          startingPositions.push(position);
+        }
+      }
     });
-
-    // make sure we don't have to get out our climbing gear
-    const nonClimbingValues = viableValues.filter(
-      (x) => x.value <= currentElevationValue + 1,
-    );
-
-    // order by elevation
-    const sortedNonClimbingValues = nonClimbingValues
-      .sort(function (a, b) {
-        return a.value - b.value;
-      })
-      .reverse();
-    return sortedNonClimbingValues;
+    return startingPositions;
   }
 
-  function filterMoves(
-    potentialMoves: number[][],
-    previousLocation: number[][],
+  function BFSAlgorithum(
+    visited: boolean[][],
+    startPosition: number[],
+    maxRows: number,
+    maxColumns: number,
+    elevation: number[][],
+    endPosition: number[],
+    part1: number,
   ) {
-    let viableMoves = potentialMoves.filter((x) => x[0] > -1 && x[1] > -1);
+    let Q: number[][] = [];
+    visited[startPosition[0]][startPosition[1]] = true;
+    Q.push([startPosition[0], startPosition[1], 0]);
 
-    // don't go back to your any last positions to prevent going in circles
-    for (let i = 0; i < viableMoves.length; i++) {
-      let match = previousLocation.filter(
-        (x) => viableMoves[i][0] == x[0] && viableMoves[i][1] == x[1],
-      );
-      if (match.length > 0) {
-        viableMoves.splice(i, 1);
-      }
+    let endFound = false;
+    while (Q.length > 0 && !endFound) {
+      let current = Q.shift();
+      let currentRow = current[0];
+      let currentColumn = current[1];
+      let currentValue = current[2];
+      if (!current) break;
+
+      // get all adjacent vertices
+      directions.forEach((direction) => {
+        let next = AddPositions(current, direction);
+        let nextRow = next[0];
+        let nextColumn = next[1];
+
+        let isOffGrid = IsOffGrid(next, maxRows, maxColumns);
+        if (!isOffGrid) {
+          let isVisited = visited[nextRow][nextColumn];
+          if (!isVisited) {
+            let nextElevation = elevation[nextRow][nextColumn];
+            let currentElevation = elevation[currentRow][currentColumn];
+
+            let elevationDiff = nextElevation - currentElevation;
+            if (elevationDiff <= 1) {
+              // no climbing
+              if (nextRow == endPosition[0] && nextColumn == endPosition[1]) {
+                // end point
+                endFound = true;
+                part1 = currentValue + 1;
+              } else {
+                visited[nextRow][nextColumn] = true;
+                Q.push([nextRow, nextColumn, currentValue + 1]);
+              }
+            }
+          }
+        }
+      });
     }
-    return viableMoves;
+    return part1;
   }
 
-  function getPotentialMoves(currentLocation: number[]) {
-    return [
-      [currentLocation[0] + 1, currentLocation[1]],
-      [currentLocation[0] - 1, currentLocation[1]],
-      [currentLocation[0], currentLocation[1] + 1],
-      [currentLocation[0], currentLocation[1] - 1],
-    ];
+  function IsOffGrid(position: number[], maxRows: number, maxColumns: number) {
+    return (
+      position[0] < 0 ||
+      position[1] < 0 ||
+      position[0] >= maxRows ||
+      position[1] >= maxColumns
+    );
   }
 
-  function getStartingLocations(data: string[]) {
-    let locationS: number[];
-    let locationE: number[];
+  function AddPositions(a: number[], b: number[]) {
+    return [a[0] + b[0], a[1] + b[1]];
+  }
+
+  function ProcessInput(data: string[]): processedData {
+    let elevation: number[][] = [];
+    let visited: boolean[][] = [];
+    let startPosition: number[];
+    let endPosition: number[];
+
     data.forEach((row) => {
-      const rowIndex = data.indexOf(row);
-      const sjIndex = row.indexOf("S");
-      const eJIndex = row.indexOf("E");
-
-      if (sjIndex > -1) {
-        locationS = [sjIndex, rowIndex];
-      }
-      if (eJIndex > -1) {
-        locationE = [eJIndex, rowIndex];
-      }
+      ({ startPosition, endPosition } = getStartAndEndPositions(
+        data,
+        row,
+        startPosition,
+        endPosition,
+      ));
+      let elevationRow = row
+        .replace(startChar, "a")
+        .replace(endChar, "z")
+        .split("")
+        .map((x) => Number(x.charCodeAt(0)) - "a".charCodeAt(0));
+      elevation.push(elevationRow);
+      visited.push(Array<boolean>(elevationRow.length).fill(false));
     });
-    return { locationS, locationE };
+    return { elevation, visited, startPosition, endPosition };
+  }
+
+  interface processedData {
+    elevation: number[][];
+    visited: boolean[][];
+    startPosition: number[];
+    endPosition: number[];
+  }
+
+  function getStartAndEndPositions(
+    data: string[],
+    row: string,
+    startPosition: number[],
+    endPosition: number[],
+  ) {
+    let rowIndex = data.indexOf(row);
+    let startColumnIndex = row.indexOf(startChar);
+    let endColumnIndex = row.indexOf(endChar);
+
+    if (startColumnIndex > -1) {
+      startPosition = [rowIndex, startColumnIndex];
+    }
+    if (endColumnIndex > -1) {
+      endPosition = [rowIndex, endColumnIndex];
+    }
+    return { startPosition, endPosition };
   }
 }
