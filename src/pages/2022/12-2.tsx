@@ -60,16 +60,12 @@ export default function Day10() {
     let endPosition: number[];
 
     data.forEach((row) => {
-      let rowIndex = data.indexOf(row);
-      let startIndex = row.indexOf(startChar);
-      let endIndex = row.indexOf(endChar);
-
-      if (startIndex > -1) {
-        startPosition = [startIndex, rowIndex];
-      }
-      if (endIndex > -1) {
-        endPosition = [endIndex, rowIndex];
-      }
+      ({ startPosition, endPosition } = getStartAndEndPositions(
+        data,
+        row,
+        startPosition,
+        endPosition,
+      ));
       let elevationRow = row
         .replace(startChar, "a")
         .replace(endChar, "z")
@@ -86,5 +82,24 @@ export default function Day10() {
     visited: boolean[][];
     startPosition: number[];
     endPosition: number[];
+  }
+
+  function getStartAndEndPositions(
+    data: string[],
+    row: string,
+    startPosition: number[],
+    endPosition: number[],
+  ) {
+    let rowIndex = data.indexOf(row);
+    let startIndex = row.indexOf(startChar);
+    let endIndex = row.indexOf(endChar);
+
+    if (startIndex > -1) {
+      startPosition = [startIndex, rowIndex];
+    }
+    if (endIndex > -1) {
+      endPosition = [endIndex, rowIndex];
+    }
+    return { startPosition, endPosition };
   }
 }
