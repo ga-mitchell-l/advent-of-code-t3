@@ -3,7 +3,7 @@ import { useState } from "react";
 import Puzzle from "~/components/Puzzle";
 import type { PartResults } from "~/classes/PuzzleResults";
 
-export default function Day10() {
+export default function Day12() {
   const [parts, setParts] = useState<PartResults>({
     part1: 0,
     part2: 0,
@@ -28,6 +28,11 @@ export default function Day10() {
     char: string;
   }
 
+  function getSteps(processedLocation: processedLocation) {
+    let steps = 0;
+    return steps;
+  }
+
   const processData = (data: string[] | undefined) => {
     if (data) {
       let {
@@ -39,7 +44,7 @@ export default function Day10() {
       console.log("E: " + locationE);
 
       let currentLocation = [locationS[0], locationS[1]];
-      let previousLocation: number[][] = [];
+      let previousLocations: number[][] = [];
       let steps = 0;
       let eFound = false;
       const maxSteps = 4;
@@ -51,7 +56,7 @@ export default function Day10() {
         eFound === false
       ) {
         console.log("current location: " + currentLocation);
-        previousLocation.push([currentLocation[0], currentLocation[1]]);
+        previousLocations.push([currentLocation[0], currentLocation[1]]);
         let currentElevation = data[currentLocation[1]][currentLocation[0]];
         if (currentElevation === "S") {
           currentElevation = "a";
@@ -71,47 +76,32 @@ export default function Day10() {
           return;
         }
 
-        let filteredMoves = filterMoves(potentialMoves, previousLocation);
+        let filteredMoves = filterMoves(potentialMoves, previousLocations);
 
         // map them to the char values
-        const viableValues = filteredMoves.map((move) => {
-          let temp: processedLocation = {
-            location: move,
-            value: data[move[1]][move[0]].charCodeAt(0),
-            char: data[move[1]][move[0]],
-          };
-          return temp;
-        });
-
-        // make sure we don't have to get out our climbing gear
-        const nonClimbingValues = viableValues.filter(
-          (x) => x.value <= currentElevationValue + 1,
+        const moveValues = getValues(
+          filteredMoves,
+          data,
+          currentElevationValue,
         );
 
-        // order by elevation
-        const sortedNonClimbingValues = nonClimbingValues
-          .sort(function (a, b) {
-            return a.value - b.value;
-          })
-          .reverse();
-
         console.log("possible moves");
-        console.log(sortedNonClimbingValues);
+        console.log(moveValues);
 
         // if there are only options that decrease in elevation, take the highest
-        if (sortedNonClimbingValues[0].value < currentElevationValue) {
+        if (moveValues[0].value < currentElevationValue) {
           currentLocation = [
-            sortedNonClimbingValues[0].location[0],
-            sortedNonClimbingValues[0].location[1],
+            moveValues[0].location[0],
+            moveValues[0].location[1],
           ];
         } else {
           const maxElevation = Math.max(
-            ...sortedNonClimbingValues.map((loc) => {
+            ...moveValues.map((loc) => {
               return loc.value;
             }),
           );
 
-          const maxLocations = sortedNonClimbingValues.filter(
+          const maxLocations = moveValues.filter(
             (x) => x.value == maxElevation,
           );
 
@@ -172,6 +162,34 @@ export default function Day10() {
       results={parts}
     ></Puzzle>
   );
+
+  function getValues(
+    filteredMoves: number[][],
+    data: string[],
+    currentElevationValue: number,
+  ) {
+    const viableValues = filteredMoves.map((move) => {
+      let temp: processedLocation = {
+        location: move,
+        value: data[move[1]][move[0]].charCodeAt(0),
+        char: data[move[1]][move[0]],
+      };
+      return temp;
+    });
+
+    // make sure we don't have to get out our climbing gear
+    const nonClimbingValues = viableValues.filter(
+      (x) => x.value <= currentElevationValue + 1,
+    );
+
+    // order by elevation
+    const sortedNonClimbingValues = nonClimbingValues
+      .sort(function (a, b) {
+        return a.value - b.value;
+      })
+      .reverse();
+    return sortedNonClimbingValues;
+  }
 
   function filterMoves(
     potentialMoves: number[][],
