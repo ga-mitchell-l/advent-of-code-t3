@@ -50,16 +50,10 @@ export default function Day10() {
       );
 
       // part 2
-      let startingPositions: number[][] = [];
-      elevation.forEach((row) => {
-        let rowIndex = elevation.indexOf(row);
-        for (let columnIndex = 0; columnIndex < row.length; columnIndex++) {
-          if (row[columnIndex] == 0) {
-            let position = [rowIndex, columnIndex];
-            startingPositions.push(position);
-          }
-        }
-      });
+      let startingPositions: number[][] = getPositionsWithElevation(
+        elevation,
+        0,
+      );
 
       let results: number[] = [];
       startingPositions.forEach((startPosition) => {
@@ -93,6 +87,23 @@ export default function Day10() {
       results={parts}
     ></Puzzle>
   );
+
+  function getPositionsWithElevation(
+    elevation: number[][],
+    matchingElevation: number,
+  ) {
+    let startingPositions: number[][] = [];
+    elevation.forEach((row) => {
+      let rowIndex = elevation.indexOf(row);
+      for (let columnIndex = 0; columnIndex < row.length; columnIndex++) {
+        if (row[columnIndex] == matchingElevation) {
+          let position = [rowIndex, columnIndex];
+          startingPositions.push(position);
+        }
+      }
+    });
+    return startingPositions;
+  }
 
   function BFSAlgorithum(
     visited: boolean[][],
