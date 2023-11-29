@@ -32,9 +32,9 @@ export default function Day10() {
 
   const processData = (data: string[] | undefined) => {
     if (data) {
-      let maxRows = data.length;
-      let maxColumns = data[0].length;
-      let { elevation, visited, startPosition, endPosition } =
+      const maxRows = data.length;
+      const maxColumns = data[0].length;
+      const { elevation, visited, startPosition, endPosition } =
         ProcessInput(data);
 
       let part1: number;
@@ -50,14 +50,14 @@ export default function Day10() {
       );
 
       // part 2
-      let startingPositions: number[][] = getPositionsWithElevation(
+      const startingPositions: number[][] = getPositionsWithElevation(
         elevation,
         0,
       );
 
-      let results: number[] = [];
+      const results: number[] = [];
       startingPositions.forEach((startPosition) => {
-        let result = BFSAlgorithum(
+        const result = BFSAlgorithum(
           JSON.parse(JSON.stringify(visited)),
           startPosition,
           maxRows,
@@ -70,7 +70,7 @@ export default function Day10() {
         results.push(result);
       });
 
-      let part2 = Math.min(...results);
+      const part2 = Math.min(...results);
 
       setParts({
         part1: part1,
@@ -92,12 +92,12 @@ export default function Day10() {
     elevation: number[][],
     matchingElevation: number,
   ) {
-    let startingPositions: number[][] = [];
+    const startingPositions: number[][] = [];
     elevation.forEach((row) => {
-      let rowIndex = elevation.indexOf(row);
+      const rowIndex = elevation.indexOf(row);
       for (let columnIndex = 0; columnIndex < row.length; columnIndex++) {
         if (row[columnIndex] == matchingElevation) {
-          let position = [rowIndex, columnIndex];
+          const position = [rowIndex, columnIndex];
           startingPositions.push(position);
         }
       }
@@ -114,32 +114,32 @@ export default function Day10() {
     endPosition: number[],
     part1: number,
   ) {
-    let Q: number[][] = [];
+    const Q: number[][] = [];
     visited[startPosition[0]][startPosition[1]] = true;
     Q.push([startPosition[0], startPosition[1], 0]);
 
     let endFound = false;
     while (Q.length > 0 && !endFound) {
-      let current = Q.shift();
-      let currentRow = current[0];
-      let currentColumn = current[1];
-      let currentValue = current[2];
+      const current = Q.shift();
+      const currentRow = current[0];
+      const currentColumn = current[1];
+      const currentValue = current[2];
       if (!current) break;
 
       // get all adjacent vertices
       directions.forEach((direction) => {
-        let next = AddPositions(current, direction);
-        let nextRow = next[0];
-        let nextColumn = next[1];
+        const next = AddPositions(current, direction);
+        const nextRow = next[0];
+        const nextColumn = next[1];
 
-        let isOffGrid = IsOffGrid(next, maxRows, maxColumns);
+        const isOffGrid = IsOffGrid(next, maxRows, maxColumns);
         if (!isOffGrid) {
-          let isVisited = visited[nextRow][nextColumn];
+          const isVisited = visited[nextRow][nextColumn];
           if (!isVisited) {
-            let nextElevation = elevation[nextRow][nextColumn];
-            let currentElevation = elevation[currentRow][currentColumn];
+            const nextElevation = elevation[nextRow][nextColumn];
+            const currentElevation = elevation[currentRow][currentColumn];
 
-            let elevationDiff = nextElevation - currentElevation;
+            const elevationDiff = nextElevation - currentElevation;
             if (elevationDiff <= 1) {
               // no climbing
               if (nextRow == endPosition[0] && nextColumn == endPosition[1]) {
@@ -172,8 +172,8 @@ export default function Day10() {
   }
 
   function ProcessInput(data: string[]): processedData {
-    let elevation: number[][] = [];
-    let visited: boolean[][] = [];
+    const elevation: number[][] = [];
+    const visited: boolean[][] = [];
     let startPosition: number[];
     let endPosition: number[];
 
@@ -184,7 +184,7 @@ export default function Day10() {
         startPosition,
         endPosition,
       ));
-      let elevationRow = row
+      const elevationRow = row
         .replace(startChar, "a")
         .replace(endChar, "z")
         .split("")
@@ -208,9 +208,9 @@ export default function Day10() {
     startPosition: number[],
     endPosition: number[],
   ) {
-    let rowIndex = data.indexOf(row);
-    let startColumnIndex = row.indexOf(startChar);
-    let endColumnIndex = row.indexOf(endChar);
+    const rowIndex = data.indexOf(row);
+    const startColumnIndex = row.indexOf(startChar);
+    const endColumnIndex = row.indexOf(endChar);
 
     if (startColumnIndex > -1) {
       startPosition = [rowIndex, startColumnIndex];
