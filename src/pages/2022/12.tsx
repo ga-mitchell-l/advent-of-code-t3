@@ -71,21 +71,10 @@ export default function Day10() {
           return;
         }
 
-        // reduce down to moves that are in the input
-        let viableMoves = potentialMoves.filter((x) => x[0] > -1 && x[1] > -1);
-
-        // don't go back to your any last positions to prevent going in circles
-        for (let i = 0; i < viableMoves.length; i++) {
-          let match = previousLocation.filter(
-            (x) => viableMoves[i][0] == x[0] && viableMoves[i][1] == x[1],
-          );
-          if (match.length > 0) {
-            viableMoves.splice(i, 1);
-          }
-        }
+        let filteredMoves = filterMoves(potentialMoves, previousLocation);
 
         // map them to the char values
-        const viableValues = viableMoves.map((move) => {
+        const viableValues = filteredMoves.map((move) => {
           let temp: processedLocation = {
             location: move,
             value: data[move[1]][move[0]].charCodeAt(0),
@@ -183,6 +172,24 @@ export default function Day10() {
       results={parts}
     ></Puzzle>
   );
+
+  function filterMoves(
+    potentialMoves: number[][],
+    previousLocation: number[][],
+  ) {
+    let viableMoves = potentialMoves.filter((x) => x[0] > -1 && x[1] > -1);
+
+    // don't go back to your any last positions to prevent going in circles
+    for (let i = 0; i < viableMoves.length; i++) {
+      let match = previousLocation.filter(
+        (x) => viableMoves[i][0] == x[0] && viableMoves[i][1] == x[1],
+      );
+      if (match.length > 0) {
+        viableMoves.splice(i, 1);
+      }
+    }
+    return viableMoves;
+  }
 
   function getPotentialMoves(currentLocation: number[]) {
     return [
