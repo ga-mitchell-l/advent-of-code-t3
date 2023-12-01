@@ -22,58 +22,84 @@ export default function Day10() {
 
   const processData = (data: string[] | undefined) => {
     if (data) {
-      let correctOrder = 0;
-      for (let i = 0; i < data.length; i += 3) {
+      let correctOrderCount = 0;
+      for (let i = 3; i < 6; i += 3) {
         const packetA = data[i];
         const packetB = data[i + 1];
 
-        const arrayA = ParseStringToArray(packetA);
-        const arrayB = ParseStringToArray(packetB);
+        const arrayA = JSON.parse(packetA);
+        const arrayB = JSON.parse(packetB);
 
         console.log("packet A: ");
         console.log(arrayA);
         console.log("packet B: ");
         console.log(arrayB);
 
+        const correctOrder: boolean = CompareRecursively(arrayA, arrayB);
+        console.log("correct order: " + correctOrder);
+        if (correctOrder) {
+          correctOrderCount++;
+        }
+
         console.log("---------------");
       }
 
       setParts({
-        part1: correctOrder,
+        part1: correctOrderCount,
         part2: 0,
       });
     }
   };
 
-  function ParseStringToArray(str) {
-    var i = 0;
-    function main() {
-      var arr = [];
-      var startIndex = i;
-      function addWord() {
-        if (i - 1 > startIndex) {
-          arr.push(Number(str.slice(startIndex, i - 1)));
+  function CompareRecursively(arrayA: any[], arrayB: any[]): boolean {
+    console.log("comparing");
+    console.log("A");
+    console.log(arrayA);
+    console.log("B");
+    console.log(arrayB);
+    let i = 0;
+    while (i < Math.min(arrayA.length, arrayB.length)) {
+      console.log("1");
+      const existsA = i < arrayA.length;
+      const existsB = i < arrayB.length;
+
+      if (!existsA && existsB) {
+        console.log("RETURN 1");
+        return true;
+      } else if (existsA && !existsB) {
+        console.log("RETURN 2");
+        return false;
+      } else {
+        console.log("2");
+        const valueA = arrayA[i];
+        const valueB = arrayB[i];
+        console.log(valueA);
+        console.log(valueA);
+
+        const valueAIsNumber = typeof valueA == "number";
+        const valueBIsNumber = typeof valueB == "number";
+        console.log(valueAIsNumber);
+        console.log(valueBIsNumber);
+
+        if (valueAIsNumber && valueBIsNumber) {
+          if (valueA != valueB) {
+            console.log("RETURN 3: " + (valueA < valueB));
+            return valueA < valueB;
+          }
+        } else if (valueAIsNumber && !valueBIsNumber) {
+          const newList = [valueA];
+          return CompareRecursively(newList, valueB);
+        } else if (valueBIsNumber && !valueAIsNumber) {
+          const newList = [valueB];
+          return CompareRecursively(valueA, newList);
+        } else {
+          console.log("hello");
+          return CompareRecursively(valueA, valueB);
         }
       }
-      while (i < str.length) {
-        switch (str[i++]) {
-          case ",":
-            addWord();
-            startIndex = i;
-            continue;
-          case "[":
-            arr.push(main());
-            startIndex = i;
-            continue;
-          case "]":
-            addWord();
-            return arr;
-        }
-      }
-      addWord();
-      return arr;
+
+      i++;
     }
-    return main();
   }
 
   return (
