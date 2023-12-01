@@ -23,8 +23,17 @@ export default function Day01() {
 
   const processData = (data: string[] | undefined) => {
     if (data) {
+      let part1 = 0;
+      data.forEach((row) => {
+        const characters = row.split("").map(Number);
+        const numbers = characters.filter((x) => !isNaN(x));
+        const first = numbers[0];
+        const last = numbers[numbers.length - 1];
+        const combination = first.toString() + last.toString();
+        part1 += Number(combination);
+      });
       setParts({
-        part1: 0,
+        part1: part1,
         part2: 0,
       });
     }
