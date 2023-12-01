@@ -48,6 +48,7 @@ export default function Day01() {
   };
 
   const processData = (data: string[] | undefined) => {
+    data = ["two1nine", "eightwothree"];
     if (data) {
       let part1 = 0;
       let part2 = 0;
@@ -75,13 +76,18 @@ export default function Day01() {
   );
 
   function Part1(row: string): number {
-    const characters = row.split("").map(Number);
-    const numbers = characters.filter((x) => !isNaN(x));
+    const numbers = getNumbers(row);
     if (numbers.length == 0) {
       return 0;
     }
     const result = getDayOne(numbers);
     return result;
+  }
+
+  function getNumbers(row: string) {
+    const characters = row.split("").map(Number);
+    const numbers = characters.filter((x) => !isNaN(x));
+    return numbers;
   }
 
   function getDayOne(numbers: number[]) {
@@ -96,81 +102,51 @@ export default function Day01() {
     return string.split("").reverse().join("");
   }
 
+  function replaceAt(
+    original: string,
+    index: number,
+    replacement: string,
+    toReplaceLength: number,
+  ): string {
+    return (
+      original.substring(0, index) +
+      replacement +
+      original.substring(index + toReplaceLength)
+    );
+  }
+
   function Part2(row: string): number {
-    const numbersAndIndexes: Day01[] = [];
-
-    for (let i = 0; i < 10; i++) {
-      let tempRow = row;
-      while (tempRow.indexOf(i.toString()) > -1) {
-        const indexOf = row.indexOf(i.toString());
-        const numberAndIndex: Day01 = { digit: i, index: indexOf };
-        tempRow = tempRow.slice(indexOf + 1);
-        numbersAndIndexes.push(numberAndIndex);
-      }
-    }
-    const numbersAndIndexesLeft: Day01[] = JSON.parse(
-      JSON.stringify(numbersAndIndexes),
-    );
-    const numbersAndIndexesRight: Day01[] = JSON.parse(
-      JSON.stringify(numbersAndIndexes),
-    );
-
+    let reverseRow = reverseString(row);
     for (let key in numberDict) {
       console.log("row: " + row);
-      let tempRowLeft = row;
-      while (tempRowLeft.indexOf(key) > -1) {
-        console.log("FROM THE LEFT FROM THE LEFT");
-        console.log("key: " + key);
+      const value = numberDict[key].toString();
+
+      while (row.indexOf(key) > -1) {
+        // console.log("FROM THE LEFT FROM THE LEFT");
+        // console.log("key: " + key);
         const indexOf = row.indexOf(key);
-        const numberAndIndex: Day01 = {
-          digit: numberDict[key],
-          index: indexOf,
-        };
-        tempRowLeft = tempRowLeft.slice(indexOf + 1);
-        numbersAndIndexesLeft.push(numberAndIndex);
+        row = replaceAt(row, indexOf, value, key.length);
       }
 
-      let reverseRow = reverseString(row);
-      let tempRowRight = reverseRow;
       let reverseKey = reverseString(key);
-      let max = 0;
-      while (tempRowRight.indexOf(reverseKey) > -1) {
-        console.log("FROM THE RIGHT FROM THE RIGHT");
-        console.log("reverse key: " + reverseKey);
-        console.log("temp row right: " + tempRowRight);
+      while (reverseRow.indexOf(reverseKey) > -1) {
+        // console.log("FROM THE RIGHT FROM THE RIGHT");
+        // console.log("reverse key: " + reverseKey);
+        // console.log("reverse row: " + reverseRow);
         const indexOf = reverseRow.indexOf(reverseKey);
-        console.log("index: " + indexOf);
-        const numberAndIndex: Day01 = {
-          digit: numberDict[key],
-          index: row.length - indexOf - key.length,
-        };
-        tempRowRight = tempRowRight.slice(indexOf + 1);
-        numbersAndIndexesRight.push(numberAndIndex);
-        max++;
+        // console.log("index: " + indexOf);
+        reverseRow = replaceAt(reverseRow, indexOf, value, key.length);
       }
     }
-    console.log(numbersAndIndexesLeft);
-    console.log(numbersAndIndexesRight);
+    console.log(row);
+    console.log(reverseRow);
 
-    numbersAndIndexesLeft.sort(function (a, b) {
-      return a.index - b.index;
-    });
+    const left = getNumbers(row);
+    const right = getNumbers(reverseRow);
 
-    numbersAndIndexesRight.sort(function (a, b) {
-      return a.index - b.index;
-    });
+    const result = left[0].toString() + right[0].toString();
+    console.log(result);
 
-    const justNumbersLeft = numbersAndIndexesLeft.map((x) => x.digit);
-    const justNumbersRight = numbersAndIndexesRight.map((x) => x.digit);
-    console.log(justNumbersLeft);
-    console.log(justNumbersRight);
-
-    const left = justNumbersLeft[0];
-    const right = justNumbersRight[justNumbersRight.length - 1];
-
-    const foo = left.toString() + right.toString();
-    const result = Number(foo);
-
-    return result;
+    return Number(result);
   }
 }
