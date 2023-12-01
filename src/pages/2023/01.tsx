@@ -48,7 +48,6 @@ export default function Day01() {
   };
 
   const processData = (data: string[] | undefined) => {
-    data = ["sevenine", "eighteightwo"];
     if (data) {
       let part1 = 0;
       let part2 = 0;
@@ -93,6 +92,10 @@ export default function Day01() {
     return result;
   }
 
+  function reverseString(string: string) {
+    return string.split("").reverse().join("");
+  }
+
   function Part2(row: string): number {
     const numbersAndIndexes: Day01[] = [];
 
@@ -105,27 +108,68 @@ export default function Day01() {
         numbersAndIndexes.push(numberAndIndex);
       }
     }
+    const numbersAndIndexesLeft: Day01[] = JSON.parse(
+      JSON.stringify(numbersAndIndexes),
+    );
+    const numbersAndIndexesRight: Day01[] = JSON.parse(
+      JSON.stringify(numbersAndIndexes),
+    );
 
     for (let key in numberDict) {
-      let tempRow = row;
-      while (tempRow.indexOf(key) > -1) {
+      console.log("row: " + row);
+      let tempRowLeft = row;
+      while (tempRowLeft.indexOf(key) > -1) {
+        console.log("FROM THE LEFT FROM THE LEFT");
+        console.log("key: " + key);
         const indexOf = row.indexOf(key);
         const numberAndIndex: Day01 = {
           digit: numberDict[key],
           index: indexOf,
         };
-        tempRow = tempRow.slice(indexOf + 1);
-        numbersAndIndexes.push(numberAndIndex);
+        tempRowLeft = tempRowLeft.slice(indexOf + 1);
+        numbersAndIndexesLeft.push(numberAndIndex);
+      }
+
+      let reverseRow = reverseString(row);
+      let tempRowRight = reverseRow;
+      let reverseKey = reverseString(key);
+      let max = 0;
+      while (tempRowRight.indexOf(reverseKey) > -1) {
+        console.log("FROM THE RIGHT FROM THE RIGHT");
+        console.log("reverse key: " + reverseKey);
+        console.log("temp row right: " + tempRowRight);
+        const indexOf = reverseRow.indexOf(reverseKey);
+        console.log("index: " + indexOf);
+        const numberAndIndex: Day01 = {
+          digit: numberDict[key],
+          index: row.length - indexOf - key.length,
+        };
+        tempRowRight = tempRowRight.slice(indexOf + 1);
+        numbersAndIndexesRight.push(numberAndIndex);
+        max++;
       }
     }
+    console.log(numbersAndIndexesLeft);
+    console.log(numbersAndIndexesRight);
 
-    numbersAndIndexes.sort(function (a, b) {
+    numbersAndIndexesLeft.sort(function (a, b) {
       return a.index - b.index;
     });
 
-    const justNumbers = numbersAndIndexes.map((x) => x.digit);
-    console.log(justNumbers);
-    const result = getDayOne(justNumbers);
+    numbersAndIndexesRight.sort(function (a, b) {
+      return a.index - b.index;
+    });
+
+    const justNumbersLeft = numbersAndIndexesLeft.map((x) => x.digit);
+    const justNumbersRight = numbersAndIndexesRight.map((x) => x.digit);
+    console.log(justNumbersLeft);
+    console.log(justNumbersRight);
+
+    const left = justNumbersLeft[0];
+    const right = justNumbersRight[justNumbersRight.length - 1];
+
+    const foo = left.toString() + right.toString();
+    const result = Number(foo);
 
     return result;
   }
