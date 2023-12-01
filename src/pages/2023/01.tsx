@@ -53,11 +53,9 @@ export default function Day01() {
       let part1 = 0;
       let part2 = 0;
       data.forEach((row) => {
-        console.log("part 1");
         const part1Row = Part1(row);
         part1 += part1Row;
 
-        console.log("part 2");
         const part2Row = Part2(row);
         part2 += part2Row;
       });
@@ -78,7 +76,6 @@ export default function Day01() {
   );
 
   function Part1(row: string): number {
-    console.log(row);
     const characters = row.split("").map(Number);
     const numbers = characters.filter((x) => !isNaN(x));
     if (numbers.length == 0) {
@@ -89,7 +86,6 @@ export default function Day01() {
   }
 
   function getDayOne(numbers: number[]) {
-    console.log(numbers);
     const first = numbers[0];
     const last = numbers[numbers.length - 1];
     const combination = first.toString() + last.toString();
