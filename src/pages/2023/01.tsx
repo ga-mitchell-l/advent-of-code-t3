@@ -126,10 +126,7 @@ export default function Day01() {
     const left = getNumbers(row);
     const right = getNumbers(reverseRow);
 
-    console.log("left: " + left[0] + " right: " + right[0]);
-
     const result = left[0].toString() + right[0].toString();
-    console.log(result);
 
     return Number(result);
   }
