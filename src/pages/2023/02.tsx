@@ -30,84 +30,33 @@ export default function Day02() {
     if (data) {
       let idSum = 0;
 
-      data.forEach(
-        (row) => {
-          console.log("- - - - - - - ");
-          console.log(row);
-          const [game, cubes] = row.split(": ");
-          const rowId = getDigit(game);
-          const handfulls = cubes.split("; ");
-          console.log(handfulls);
-          const handfulPossible: boolean[] = [];
+      data.forEach((row) => {
+        const [game, cubes] = row.split(": ");
+        const rowId = getDigit(game);
+        const handfulls = cubes.split("; ");
+        const handfulPossible: boolean[] = [];
 
-          handfulls.forEach((handfull) => {
-            console.log(handfull);
-            const die = handfull.split(", ");
-            die.forEach((dice) => {
-              console.log(dice);
-              let [stringQuantity, colour] = dice.split(" ");
-              const quantity = Number(stringQuantity);
-              switch (colour) {
-                case "red":
-                  handfulPossible.push(quantity <= redMax);
-                case "green":
-                  handfulPossible.push(quantity <= greenMax);
-                case "blue":
-                  handfulPossible.push(quantity <= blueMax);
-              }
-            });
+        handfulls.forEach((handfull) => {
+          const die = handfull.split(", ");
+          die.forEach((dice) => {
+            let [stringQuantity, colour] = dice.split(" ");
+            const quantity = Number(stringQuantity);
+            switch (colour) {
+              case "red":
+                handfulPossible.push(quantity <= redMax);
+              case "green":
+                handfulPossible.push(quantity <= greenMax);
+              case "blue":
+                handfulPossible.push(quantity <= blueMax);
+            }
           });
-          console.log(handfulPossible);
-          if (handfulPossible.filter((x) => !x).length == 0) {
-            // if there are no impossibles, it's possible
-            idSum += rowId;
-            console.log("possible!");
-          }
-
-          // let possible = true;
-          // handfulls.forEach((handful) => {
-          //   console.log("handful");
-          //   console.log(handfulls);
-          //   let red = 0;
-          //   let blue = 0;
-          //   let green = 0;
-
-          //   handful.forEach((diceCombo) => {
-          //     const [stringQuantity, colour] = diceCombo.split(" ");
-          //     const quantity = Number(stringQuantity);
-
-          //     switch (colour) {
-          //       case "red":
-          //         red = quantity;
-          //       case "blue":
-          //         blue = quantity;
-          //       case "green":
-          //         green = quantity;
-          //     }
-          //   });
-
-          //   const handfulPossible =
-          //     red <= redMax && blue <= blueMax && green <= greenMax;
-          //   possible = possible && handfulPossible;
-
-          //   if (!handfulPossible) {
-          //     console.log("impossible!");
-          //     console.log(
-          //       "red: " + red + ", blue: " + blue + ", green: " + green,
-          //     );
-          //   }
-          // });
-
-          // if (possible) {
-          //   idSum += rowId;
-          //   console.log("possible");
-          // } else {
-          //   console.log("impossible");
-          // }
-        },
-
-        // hell
-      );
+        });
+        if (handfulPossible.filter((x) => !x).length == 0) {
+          // if there are no impossibles, it's possible
+          idSum += rowId;
+          console.log("possible!");
+        }
+      });
 
       setParts({
         part1: idSum,
