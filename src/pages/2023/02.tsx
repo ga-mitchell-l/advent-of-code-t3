@@ -28,13 +28,19 @@ export default function Day02() {
 
   const processData = (data: string[] | undefined) => {
     if (data) {
+      // data = ["Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green"];
       let idSum = 0;
+      let powerSum = 0;
 
       data.forEach((row) => {
         const [game, cubes] = row.split(": ");
         const rowId = getDigit(game);
         const handfulls = cubes.split("; ");
         const handfulPossible: boolean[] = [];
+
+        let greenMaxRow = 0;
+        let blueMaxRow = 0;
+        let redMaxRow = 0;
 
         handfulls.forEach((handfull) => {
           const die = handfull.split(", ");
@@ -44,23 +50,31 @@ export default function Day02() {
             switch (colour) {
               case "red":
                 handfulPossible.push(quantity <= redMax);
+                redMaxRow = Math.max(redMaxRow, quantity);
+                break;
               case "green":
                 handfulPossible.push(quantity <= greenMax);
+                greenMaxRow = Math.max(greenMaxRow, quantity);
+                break;
               case "blue":
                 handfulPossible.push(quantity <= blueMax);
+                blueMaxRow = Math.max(blueMaxRow, quantity);
+                break;
             }
           });
         });
         if (handfulPossible.filter((x) => !x).length == 0) {
           // if there are no impossibles, it's possible
           idSum += rowId;
-          console.log("possible!");
         }
+
+        const power = redMaxRow * greenMaxRow * blueMaxRow;
+        powerSum += power;
       });
 
       setParts({
         part1: idSum,
-        part2: 0,
+        part2: powerSum,
       });
     }
   };
