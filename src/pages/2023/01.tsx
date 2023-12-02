@@ -42,13 +42,7 @@ export default function Day01() {
     "7pqrstsixteen",
   ];
 
-  type Day01 = {
-    digit: number;
-    index: number;
-  };
-
   const processData = (data: string[] | undefined) => {
-    data = ["two1nine", "eightwothree"];
     if (data) {
       let part1 = 0;
       let part2 = 0;
@@ -106,43 +100,33 @@ export default function Day01() {
     original: string,
     index: number,
     replacement: string,
-    toReplaceLength: number,
   ): string {
     return (
-      original.substring(0, index) +
-      replacement +
-      original.substring(index + toReplaceLength)
+      original.substring(0, index) + replacement + original.substring(index + 1)
     );
   }
 
   function Part2(row: string): number {
     let reverseRow = reverseString(row);
-    for (let key in numberDict) {
-      console.log("row: " + row);
-      const value = numberDict[key].toString();
-
-      while (row.indexOf(key) > -1) {
-        // console.log("FROM THE LEFT FROM THE LEFT");
-        // console.log("key: " + key);
-        const indexOf = row.indexOf(key);
-        row = replaceAt(row, indexOf, value, key.length);
-      }
-
-      let reverseKey = reverseString(key);
-      while (reverseRow.indexOf(reverseKey) > -1) {
-        // console.log("FROM THE RIGHT FROM THE RIGHT");
-        // console.log("reverse key: " + reverseKey);
-        // console.log("reverse row: " + reverseRow);
-        const indexOf = reverseRow.indexOf(reverseKey);
-        // console.log("index: " + indexOf);
-        reverseRow = replaceAt(reverseRow, indexOf, value, key.length);
+    for (let i = 0; i < row.length; i++) {
+      for (let key in numberDict) {
+        const keylength = key.length;
+        const keyslice = row.slice(i, i + keylength);
+        if (keyslice == key) {
+          row = replaceAt(row, i, numberDict[key]);
+        }
+        const reverseKey = reverseString(key);
+        const reverseKeyslice = reverseRow.slice(i, i + keylength);
+        if (reverseKeyslice == reverseKey) {
+          reverseRow = replaceAt(reverseRow, i, numberDict[key]);
+        }
       }
     }
-    console.log(row);
-    console.log(reverseRow);
 
     const left = getNumbers(row);
     const right = getNumbers(reverseRow);
+
+    console.log("left: " + left[0] + " right: " + right[0]);
 
     const result = left[0].toString() + right[0].toString();
     console.log(result);
