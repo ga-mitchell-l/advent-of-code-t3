@@ -3,13 +3,13 @@ import { useState } from "react";
 import Puzzle from "~/components/Puzzle";
 import type { PartResults } from "~/classes/PuzzleResults";
 
-export default function Day10() {
+export default function Day03() {
   const [parts, setParts] = useState<PartResults>({
     part1: 0,
     part2: 0,
   });
 
-  const day = 10;
+  const day = 3;
   const year = 2023;
   const data: string[] = api.file.getInputFile.useQuery({
     year: year,
