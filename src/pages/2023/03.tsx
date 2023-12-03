@@ -22,6 +22,7 @@ export default function Day03() {
   }).data;
 
   const symbolRegex = /[*#+$%\-\@\/=]/g;
+  const splitRegex = /[*#+$%\-\@\/=\.]/g;
 
   const processData = (data: string[] | undefined) => {
     // data = ["467..114..", "...*......", "..35..633."];
@@ -29,58 +30,55 @@ export default function Day03() {
     let part1 = 0;
     const validNumbers: number[] = [];
     if (data) {
-      const schematic: string[][] = [];
       data.forEach((row) => {
-        const splitRow = row.split("");
-        schematic.push(splitRow);
-      });
+        console.log("_____________");
+        console.log(row);
+        const rowIndex = data.indexOf(row);
+        const packets = row.split(splitRegex).filter((x) => x != "");
+        console.log("PACKETS!!!");
+        console.log(packets);
+        packets.forEach((packet) => {
+          console.log("- - - -");
+          const numberPacket = Number(packet);
+          if (!isNaN(numberPacket)) {
+            const leftIndex = row.indexOf(packet);
+            const rightIndex = leftIndex + packet.length - 1;
+            console.log(leftIndex + "," + rightIndex);
+            let adjChars = "";
 
-      schematic.forEach((row) => {
-        console.log("--------------");
-        console.log("row: " + row);
-        const rowIndex = schematic.indexOf(row);
-
-        for (let chunkIndex = 0; chunkIndex < row.length; chunkIndex++) {
-          console.log("- - - - - -");
-          console.log("index: " + rowIndex + ", " + chunkIndex);
-          let chunk = row[chunkIndex];
-          let floop = "";
-          console.log("chunk: " + chunk);
-          const numberChunk = Number(chunk);
-          if (!isNaN(numberChunk)) {
             for (
               let adjRowIndex = rowIndex - 1;
               adjRowIndex < rowIndex + 2;
               adjRowIndex++
             ) {
-              if (adjRowIndex > -1 && adjRowIndex < schematic.length) {
-                let adjRow = schematic[adjRowIndex];
+              if (adjRowIndex > -1 && adjRowIndex < data.length) {
+                let adjRow = data[adjRowIndex];
                 console.log(adjRow);
 
                 for (
-                  let adjChunkIndex = chunkIndex - 1;
-                  adjChunkIndex < chunkIndex + 2;
+                  let adjChunkIndex = leftIndex - 1;
+                  adjChunkIndex < rightIndex + 2;
                   adjChunkIndex++
                 ) {
                   if (adjChunkIndex > -1 && adjChunkIndex < adjRow.length) {
-                    let adjChunk = adjRow[adjChunkIndex];
-                    floop = floop + adjChunk;
+                    const adjChunk = adjRow[adjChunkIndex];
+                    adjChars = adjChars + adjChunk;
                   }
                 }
               }
             }
-            console.log("floop: " + floop);
-            const match = [...floop.matchAll(symbolRegex)];
+            console.log("adjchars: " + adjChars);
+            const match = [...adjChars.matchAll(symbolRegex)];
             if (match.length > 0) {
-              console.log("it's a match: " + chunk);
-              validNumbers.push(numberChunk);
-              console.log(validNumbers);
+              console.log("it's a match: " + numberPacket);
+              validNumbers.push(numberPacket);
             }
           }
-        }
-
-        part1 = validNumbers.reduce((p, q) => p + q, 0);
+        });
       });
+
+      console.log("valid numbers: " + validNumbers);
+      part1 = validNumbers.reduce((p, q) => p + q, 0);
       setParts({
         part1: part1,
         part2: 0,
