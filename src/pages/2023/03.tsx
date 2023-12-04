@@ -2,7 +2,6 @@ import { api } from "~/utils/api";
 import { useState } from "react";
 import Puzzle from "~/components/Puzzle";
 import type { PartResults } from "~/classes/PuzzleResults";
-import { sign } from "crypto";
 
 export default function Day03() {
   const [parts, setParts] = useState<PartResults>({
@@ -23,58 +22,51 @@ export default function Day03() {
   }).data;
 
   const symbolRegex = /[^0-9.]/g;
-  const splitRegex = /[^0-9]/g;
-  const regex = /\d+/g;
+  const digitRegex = /\d+/g;
 
   const processData = (data: string[] | undefined) => {
     if (data) {
-      let part1 = 0;
       const validNumbers = new Set<number[]>();
-
       const schematic: string[][] = getSchematic(data);
       const symbolIndexes: number[][] = getSymbolIndexes(schematic);
+
       if (symbolIndexes.length > 0) {
-        for (let i = 0; i < 10; i++) {
+        for (let i = 0; i < Math.min(10, symbolIndexes.length); i++) {
           // }
 
           // symbolIndexes.forEach((symbolIndex) => {
           let symbolIndex = symbolIndexes[i];
-          // console.log(symbolIndex);
           const [rowIndex, columnIndex] = symbolIndex;
-          console.log("----------------");
-          console.log("SYMBOL: " + rowIndex + ", " + columnIndex);
+          // console.log("----------------");
+          // console.log("SYMBOL: " + rowIndex + ", " + columnIndex);
 
           const middleRow = data[rowIndex];
-          const farb = middleRow.slice(columnIndex - 3, columnIndex + 3);
-          console.log("middle row: " + farb);
-          const [left, leftIndex] = getLeft(middleRow, columnIndex, -1);
-          if (left > 0) {
-            console.log("left: " + left);
-            validNumbers.add([left, rowIndex, leftIndex]);
+          // console.log(" - - - middle row - - - ");
+          EvaluateRow(middleRow, columnIndex, validNumbers, rowIndex);
+
+          const topRowIndex = rowIndex - 1;
+          if (topRowIndex > -1) {
+            const topRow = data[rowIndex - 1];
+            // console.log(" - - - top row - - - ");
+            EvaluateRow(topRow, columnIndex, validNumbers, topRowIndex);
           }
 
-          const [right, rightIndex] = getLeft(middleRow, columnIndex, 1);
-          if (right > 0) {
-            console.log("right: " + right);
-            validNumbers.add([right, rowIndex, rightIndex]);
+          const bottomRowIndex = rowIndex + 1;
+          if (bottomRowIndex < data.length) {
+            const bottomRow = data[rowIndex + 1];
+            // console.log("- -  - - bottom row - - - -");
+            EvaluateRow(bottomRow, columnIndex, validNumbers, bottomRowIndex);
           }
-
-          // const topRowIndex = rowIndex - 1;
-          // if (topRowIndex > 0) {
-          //   const topRow = data[rowIndex - 1];
-          // }
-
-          // const bottomRowIndex = rowIndex + 1;
-          // if (bottomRowIndex < data.length) {
-          //   const bottomRow = data[rowIndex + 1];
-          // }
         }
       }
 
-      console.log(validNumbers);
+      const hooch = Array.from(validNumbers);
+      const farg = hooch.map((x) => x[0]);
+      const ploof = farg.reduce((a, b) => a + b, 0);
+      console.log(farg);
 
       setParts({
-        part1: 0,
+        part1: ploof,
         part2: 0,
       });
     }
@@ -89,6 +81,76 @@ export default function Day03() {
     ></Puzzle>
   );
 
+  function EvaluateRow(
+    row: string,
+    columnIndex: number,
+    validNumbers: Set<number[]>,
+    rowIndex: number,
+  ) {
+    const [middle, middleIndex] = getMiddle(row, columnIndex);
+    console.log("middle returned");
+    console.log(middle);
+    console.log(middleIndex);
+    if (middle > 0) {
+      console.log("middle: " + middle);
+      validNumbers.add([middle, rowIndex, middleIndex]);
+      return; // if there is a number in the middle we won't have diagonals or left or right
+    }
+
+    const [left, leftIndex] = getLeft(row, columnIndex, -1);
+    if (left > 0) {
+      console.log("left: " + left);
+      validNumbers.add([left, rowIndex, leftIndex]);
+    }
+
+    const [right, rightIndex] = getLeft(row, columnIndex, 1);
+    if (right > 0) {
+      console.log("right: " + right);
+      validNumbers.add([right, rowIndex, rightIndex]);
+    }
+  }
+
+  function getMiddle(adjRow: string, symbolIndex: number): number[] {
+    const possibleSymbol = Number(adjRow[symbolIndex]);
+    if (isNaN(possibleSymbol)) {
+      return [0, 0];
+    }
+
+    const maxLeft = Math.max(0, symbolIndex - 2);
+    const maxRight = Math.min(adjRow.length, symbolIndex + 3);
+    const stringUnderConsideration = adjRow.slice(maxLeft, maxRight);
+    console.log("SUC: " + stringUnderConsideration);
+
+    const matches = [...stringUnderConsideration.matchAll(digitRegex)];
+    if (matches.length == 0) {
+      return [0, 0];
+    }
+
+    const compatible: number[][] = [];
+    matches.forEach((match) => {
+      const indexLeft = match.index;
+      const numberString = match[0];
+      const indexRight = indexLeft + numberString.length;
+      console.log(numberString + " " + indexLeft + "-" + indexRight);
+
+      if (indexLeft > 2 || 2 > indexRight) {
+        return;
+      }
+
+      console.log("in range");
+      const middle = Number(numberString);
+      console.log("!!!!!!" + middle);
+      const matchIndex = indexLeft + maxLeft;
+      compatible.push([middle, matchIndex]);
+    });
+
+    if (compatible.length == 0) {
+      return [0, 0];
+    }
+
+    return compatible[0];
+  }
+
   function getLeft(
     adjRow: string,
     symbolIndex: number,
@@ -102,7 +164,6 @@ export default function Day03() {
     const ai = adjRow[aIndex];
     const a = Number(ai);
     if (isNaN(a)) {
-      console.log("return 1");
       return noStuff;
     }
 
