@@ -53,6 +53,12 @@ export default function Day03() {
             validNumbers.add([left, rowIndex, leftIndex]);
           }
 
+          const [right, rightIndex] = getLeft(middleRow, columnIndex, 1);
+          if (right > 0) {
+            console.log("right: " + right);
+            validNumbers.add([right, rowIndex, rightIndex]);
+          }
+
           // const topRowIndex = rowIndex - 1;
           // if (topRowIndex > 0) {
           //   const topRow = data[rowIndex - 1];
@@ -111,7 +117,13 @@ export default function Day03() {
       return aStuff;
     }
 
-    const bStuff = [Number(bi + ai), bIndex];
+    let bValue = "";
+    if (direction == -1) {
+      bValue = bi + ai;
+    } else {
+      bValue = ai + bi;
+    }
+    const bStuff = [Number(bValue), bIndex];
     const cIndex = symbolIndex + 3 * direction;
     if (cIndex < 0 || cIndex > adjRow.length - 1) {
       return bStuff;
@@ -121,8 +133,14 @@ export default function Day03() {
     if (isNaN(c)) {
       return bStuff;
     }
+    let cValue = "";
+    if (direction == -1) {
+      cValue = ci + bi + ai;
+    } else {
+      cValue = ai + bi + ci;
+    }
 
-    return [Number(ci + bi + ai), cIndex];
+    return [Number(cValue), cIndex];
   }
 
   function getSymbolIndexes(schematic: string[][]) {
