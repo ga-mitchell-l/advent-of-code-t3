@@ -26,7 +26,7 @@ export default function Day03() {
 
   const processData = (data: string[] | undefined) => {
     if (data) {
-      const validNumbersAndIndexesJSONSet = new Set<string>();
+      let validNumbersAndIndexesJSONSet = new Set<string>();
       const schematic: string[][] = getSchematic(data);
       const symbolIndexes: number[][] = getSymbolIndexes(schematic);
       let gearRatioSum = 0;
@@ -38,36 +38,33 @@ export default function Day03() {
         let symbolGearNumbers: number[] = [];
 
         const middleRow = data[rowIndex];
-        const middleGearNumbers = EvaluateRow(
-          middleRow,
-          columnIndex,
-          validNumbersAndIndexesJSONSet,
-          rowIndex,
-        );
-        symbolGearNumbers = symbolGearNumbers.concat(middleGearNumbers);
+        const middle = EvaluateRow(middleRow, columnIndex, rowIndex);
+        symbolGearNumbers = symbolGearNumbers.concat(middle.rowGearNumbers);
+        validNumbersAndIndexesJSONSet = new Set([
+          ...validNumbersAndIndexesJSONSet,
+          ...middle.validNumbers,
+        ]);
 
         const topRowIndex = rowIndex - 1;
         if (topRowIndex > -1) {
           const topRow = data[rowIndex - 1];
-          const topGearNumbers = EvaluateRow(
-            topRow,
-            columnIndex,
-            validNumbersAndIndexesJSONSet,
-            topRowIndex,
-          );
-          symbolGearNumbers = symbolGearNumbers.concat(topGearNumbers);
+          const top = EvaluateRow(topRow, columnIndex, topRowIndex);
+          symbolGearNumbers = symbolGearNumbers.concat(top.rowGearNumbers);
+          validNumbersAndIndexesJSONSet = new Set([
+            ...validNumbersAndIndexesJSONSet,
+            ...top.validNumbers,
+          ]);
         }
 
         const bottomRowIndex = rowIndex + 1;
         if (bottomRowIndex < data.length) {
           const bottomRow = data[rowIndex + 1];
-          const bottomGearNumbers = EvaluateRow(
-            bottomRow,
-            columnIndex,
-            validNumbersAndIndexesJSONSet,
-            bottomRowIndex,
-          );
-          symbolGearNumbers = symbolGearNumbers.concat(bottomGearNumbers);
+          const bottom = EvaluateRow(bottomRow, columnIndex, bottomRowIndex);
+          symbolGearNumbers = symbolGearNumbers.concat(bottom.rowGearNumbers);
+          validNumbersAndIndexesJSONSet = new Set([
+            ...validNumbersAndIndexesJSONSet,
+            ...bottom.validNumbers,
+          ]);
         }
 
         if (potentialGear && symbolGearNumbers.length == 2) {
@@ -103,15 +100,17 @@ export default function Day03() {
   function EvaluateRow(
     row: string,
     columnIndex: number,
-    validNumbers: Set<string>,
     rowIndex: number,
-  ): number[] {
+  ): EvaluateRowReturnType {
     const [middle, middleIndex] = getMiddle(row, columnIndex);
     const rowGearNumbers: number[] = [];
+    const validNumbers: Set<string> = new Set();
+
     if (middle > 0) {
       validNumbers.add(JSON.stringify([middle, rowIndex, middleIndex]));
       rowGearNumbers.push(middle);
-      return rowGearNumbers; // if there is a number in the middle we won't have diagonals or left or right
+      // if there is a number in the middle we won't have diagonals or left or right
+      return { validNumbers: validNumbers, rowGearNumbers: rowGearNumbers };
     }
 
     const [left, leftIndex] = getLeft(row, columnIndex, -1);
@@ -126,8 +125,13 @@ export default function Day03() {
       rowGearNumbers.push(right);
     }
 
-    return rowGearNumbers;
+    return { validNumbers: validNumbers, rowGearNumbers: rowGearNumbers };
   }
+
+  type EvaluateRowReturnType = {
+    validNumbers: Set<string>;
+    rowGearNumbers: number[];
+  };
 
   function getMiddle(adjRow: string, symbolIndex: number): number[] {
     const possibleSymbol = Number(adjRow[symbolIndex]);
