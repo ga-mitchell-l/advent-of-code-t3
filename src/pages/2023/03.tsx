@@ -29,40 +29,56 @@ export default function Day03() {
       const validNumbersAndIndexesJSONSet = new Set<string>();
       const schematic: string[][] = getSchematic(data);
       const symbolIndexes: number[][] = getSymbolIndexes(schematic);
+      let gearRatioSum = 0;
 
       symbolIndexes.forEach((symbolIndex) => {
+        console.log("----------");
         const [rowIndex, columnIndex] = symbolIndex;
         const symbol = data[rowIndex][columnIndex];
         const potentialGear = symbol == "*";
+        let symbolGearNumbers: number[] = [];
 
         const middleRow = data[rowIndex];
-        EvaluateRow(
+        const middleGearNumbers = EvaluateRow(
           middleRow,
           columnIndex,
           validNumbersAndIndexesJSONSet,
           rowIndex,
         );
+        console.log("middle gear: " + middleGearNumbers);
+        symbolGearNumbers = symbolGearNumbers.concat(middleGearNumbers);
 
         const topRowIndex = rowIndex - 1;
         if (topRowIndex > -1) {
           const topRow = data[rowIndex - 1];
-          EvaluateRow(
+          const topGearNumbers = EvaluateRow(
             topRow,
             columnIndex,
             validNumbersAndIndexesJSONSet,
             topRowIndex,
           );
+          console.log("top gear: " + topGearNumbers);
+          symbolGearNumbers = symbolGearNumbers.concat(topGearNumbers);
         }
 
         const bottomRowIndex = rowIndex + 1;
         if (bottomRowIndex < data.length) {
           const bottomRow = data[rowIndex + 1];
-          EvaluateRow(
+          const bottomGearNumbers = EvaluateRow(
             bottomRow,
             columnIndex,
             validNumbersAndIndexesJSONSet,
             bottomRowIndex,
           );
+          console.log("bottom gear: " + bottomGearNumbers);
+          symbolGearNumbers = symbolGearNumbers.concat(bottomGearNumbers);
+        }
+
+        console.log("total gear numbers: " + symbolGearNumbers);
+        if (potentialGear && symbolGearNumbers.length == 2) {
+          const gearRatio = symbolGearNumbers[0] * symbolGearNumbers[1];
+          console.log("gear ratio: " + gearRatio);
+          gearRatioSum += gearRatio;
         }
       });
 
@@ -76,7 +92,7 @@ export default function Day03() {
 
       setParts({
         part1: validNumberSum,
-        part2: 0,
+        part2: gearRatioSum,
       });
     }
   };
@@ -95,22 +111,28 @@ export default function Day03() {
     columnIndex: number,
     validNumbers: Set<string>,
     rowIndex: number,
-  ) {
+  ): number[] {
     const [middle, middleIndex] = getMiddle(row, columnIndex);
+    const rowGearNumbers: number[] = [];
     if (middle > 0) {
       validNumbers.add(JSON.stringify([middle, rowIndex, middleIndex]));
-      return; // if there is a number in the middle we won't have diagonals or left or right
+      rowGearNumbers.push(middle);
+      return rowGearNumbers; // if there is a number in the middle we won't have diagonals or left or right
     }
 
     const [left, leftIndex] = getLeft(row, columnIndex, -1);
     if (left > 0) {
       validNumbers.add(JSON.stringify([left, rowIndex, leftIndex]));
+      rowGearNumbers.push(left);
     }
 
     const [right, rightIndex] = getLeft(row, columnIndex, 1);
     if (right > 0) {
       validNumbers.add(JSON.stringify([right, rowIndex, rightIndex]));
+      rowGearNumbers.push(right);
     }
+
+    return rowGearNumbers;
   }
 
   function getMiddle(adjRow: string, symbolIndex: number): number[] {
