@@ -33,49 +33,39 @@ export default function Day03() {
       const schematic: string[][] = getSchematic(data);
       const symbolIndexes: number[][] = getSymbolIndexes(schematic);
 
-      symbolIndexes.forEach((symbolIndex) => {
+      for (let i = 0; i < 10; i++) {
+        // }
+
+        // symbolIndexes.forEach((symbolIndex) => {
+        let symbolIndex = symbolIndexes[i];
+        // console.log(symbolIndex);
         const [rowIndex, columnIndex] = symbolIndex;
         console.log("----------------");
         console.log("SYMBOL: " + rowIndex + ", " + columnIndex);
 
-        for (
-          let adjRowIndex = rowIndex - 1;
-          adjRowIndex < rowIndex + 2;
-          adjRowIndex++
-        ) {
-          const maxLeft = columnIndex - 1 - 2;
-          const maxRight = columnIndex + 1 + 3;
-          const floop = data[adjRowIndex].substring(maxLeft, maxRight);
-          console.log(floop);
-
-          const matches = [...floop.matchAll(regex)];
-          matches.forEach((match) => {
-            const num = Number(match[0]);
-            console.log(num);
-            const startIndex = match.index;
-            const endIndex = startIndex + match[0].length - 1;
-            console.log(startIndex + "," + endIndex);
-
-            if (
-              startIndex == 4 ||
-              startIndex == 3 ||
-              endIndex == 3 ||
-              endIndex == 2
-            ) {
-              validNumbers.add([num, adjRowIndex, maxLeft + startIndex]);
-            }
-          });
+        const middleRow = data[rowIndex];
+        const farb = middleRow.slice(columnIndex - 3, columnIndex + 3);
+        console.log("middle row: " + farb);
+        const [left, leftIndex] = getLeft(middleRow, columnIndex - 1);
+        if (left > 0) {
+          console.log("left: " + left);
+          validNumbers.add([left, rowIndex, leftIndex]);
         }
-      });
+        // const topRowIndex = rowIndex - 1;
+        // if (topRowIndex > 0) {
+        //   const topRow = data[rowIndex - 1];
+        // }
 
-      const validArray = Array.from(validNumbers).map((x) => x[0]);
-
-      part1 = validArray.reduce((a, b) => a + b, 0);
+        // const bottomRowIndex = rowIndex + 1;
+        // if (bottomRowIndex < data.length) {
+        //   const bottomRow = data[rowIndex + 1];
+        // }
+      }
 
       console.log(validNumbers);
 
       setParts({
-        part1: part1,
+        part1: 0,
         part2: 0,
       });
     }
@@ -89,6 +79,43 @@ export default function Day03() {
       results={parts}
     ></Puzzle>
   );
+
+  function getLeft(adjRow: string, columnIndex: number): number[] {
+    const noStuff = [0, 0];
+    if (columnIndex < 0 || columnIndex > adjRow.length - 1) {
+      return noStuff;
+    }
+
+    const ai = adjRow[columnIndex];
+    const a = Number(ai);
+    if (isNaN(a)) {
+      return noStuff;
+    }
+
+    const aStuff = [a, columnIndex];
+    const bIndex = columnIndex - 1;
+    if (bIndex < 0 || bIndex > adjRow.length - 1) {
+      return aStuff;
+    }
+    const bi = adjRow[bIndex];
+    const b = Number(bi);
+    if (isNaN(b)) {
+      return aStuff;
+    }
+
+    const bStuff = [Number(bi + ai), bIndex];
+    const cIndex = columnIndex - 2;
+    if (cIndex < 0 || cIndex > adjRow.length - 1) {
+      return bStuff;
+    }
+    const ci = adjRow[cIndex];
+    const c = Number(ci);
+    if (isNaN(c)) {
+      return bStuff;
+    }
+
+    return [Number(ci + bi + ai), cIndex];
+  }
 
   function getSymbolIndexes(schematic: string[][]) {
     const symbolIndexes: number[][] = [];
