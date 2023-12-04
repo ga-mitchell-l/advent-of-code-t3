@@ -32,6 +32,8 @@ export default function Day03() {
 
       symbolIndexes.forEach((symbolIndex) => {
         const [rowIndex, columnIndex] = symbolIndex;
+        const symbol = data[rowIndex][columnIndex];
+        const potentialGear = symbol == "*";
 
         const middleRow = data[rowIndex];
         EvaluateRow(
