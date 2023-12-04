@@ -32,7 +32,6 @@ export default function Day03() {
       let gearRatioSum = 0;
 
       symbolIndexes.forEach((symbolIndex) => {
-        console.log("----------");
         const [rowIndex, columnIndex] = symbolIndex;
         const symbol = data[rowIndex][columnIndex];
         const potentialGear = symbol == "*";
@@ -45,7 +44,6 @@ export default function Day03() {
           validNumbersAndIndexesJSONSet,
           rowIndex,
         );
-        console.log("middle gear: " + middleGearNumbers);
         symbolGearNumbers = symbolGearNumbers.concat(middleGearNumbers);
 
         const topRowIndex = rowIndex - 1;
@@ -57,7 +55,6 @@ export default function Day03() {
             validNumbersAndIndexesJSONSet,
             topRowIndex,
           );
-          console.log("top gear: " + topGearNumbers);
           symbolGearNumbers = symbolGearNumbers.concat(topGearNumbers);
         }
 
@@ -70,14 +67,11 @@ export default function Day03() {
             validNumbersAndIndexesJSONSet,
             bottomRowIndex,
           );
-          console.log("bottom gear: " + bottomGearNumbers);
           symbolGearNumbers = symbolGearNumbers.concat(bottomGearNumbers);
         }
 
-        console.log("total gear numbers: " + symbolGearNumbers);
         if (potentialGear && symbolGearNumbers.length == 2) {
           const gearRatio = symbolGearNumbers[0] * symbolGearNumbers[1];
-          console.log("gear ratio: " + gearRatio);
           gearRatioSum += gearRatio;
         }
       });
