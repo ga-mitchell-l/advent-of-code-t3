@@ -21,64 +21,59 @@ export default function Day03() {
     example: true,
   }).data;
 
-  const symbolRegex = /[*#+$%\-\@\/=]/g;
-  const splitRegex = /[*#+$%\-\@\/=\.]/g;
+  const symbolRegex = /[^0-9.]/g;
+  const splitRegex = /[^0-9]/g;
+  const regex = /\d+/g;
 
   const processData = (data: string[] | undefined) => {
-    // data = ["467..114..", "...*......", "..35..633."];
-    // data = ["467", ".*.", "..3"];
-    let part1 = 0;
-    const validNumbers: number[] = [];
     if (data) {
-      data.forEach((row) => {
-        console.log("_____________");
-        console.log(row);
-        const rowIndex = data.indexOf(row);
-        const packets = row.split(splitRegex).filter((x) => x != "");
-        console.log("PACKETS!!!");
-        console.log(packets);
-        packets.forEach((packet) => {
-          console.log("- - - -");
-          const numberPacket = Number(packet);
-          if (!isNaN(numberPacket)) {
-            const leftIndex = row.indexOf(packet);
-            const rightIndex = leftIndex + packet.length - 1;
-            console.log(leftIndex + "," + rightIndex);
-            let adjChars = "";
+      let part1 = 0;
+      const validNumbers = new Set<number[]>();
 
-            for (
-              let adjRowIndex = rowIndex - 1;
-              adjRowIndex < rowIndex + 2;
-              adjRowIndex++
+      const schematic: string[][] = getSchematic(data);
+      const symbolIndexes: number[][] = getSymbolIndexes(schematic);
+
+      symbolIndexes.forEach((symbolIndex) => {
+        let [rowIndex, columnIndex] = symbolIndex;
+        console.log("----------------");
+        console.log("SYMBOL: " + rowIndex + ", " + columnIndex);
+
+        for (
+          let adjRowIndex = rowIndex - 1;
+          adjRowIndex < rowIndex + 2;
+          adjRowIndex++
+        ) {
+          const maxLeft = columnIndex - 1 - 2;
+          const maxRight = columnIndex + 1 + 3;
+          const floop = data[adjRowIndex].substring(maxLeft, maxRight);
+          console.log(floop);
+
+          const matches = [...floop.matchAll(regex)];
+          matches.forEach((match) => {
+            const num = Number(match[0]);
+            console.log(num);
+            const startIndex = match.index;
+            const endIndex = startIndex + match[0].length - 1;
+            console.log(startIndex + "," + endIndex);
+
+            if (
+              startIndex == 4 ||
+              startIndex == 3 ||
+              endIndex == 3 ||
+              endIndex == 2
             ) {
-              if (adjRowIndex > -1 && adjRowIndex < data.length) {
-                let adjRow = data[adjRowIndex];
-                console.log(adjRow);
-
-                for (
-                  let adjChunkIndex = leftIndex - 1;
-                  adjChunkIndex < rightIndex + 2;
-                  adjChunkIndex++
-                ) {
-                  if (adjChunkIndex > -1 && adjChunkIndex < adjRow.length) {
-                    const adjChunk = adjRow[adjChunkIndex];
-                    adjChars = adjChars + adjChunk;
-                  }
-                }
-              }
+              validNumbers.add([num, adjRowIndex, maxLeft + startIndex]);
             }
-            console.log("adjchars: " + adjChars);
-            const match = [...adjChars.matchAll(symbolRegex)];
-            if (match.length > 0) {
-              console.log("it's a match: " + numberPacket);
-              validNumbers.push(numberPacket);
-            }
-          }
-        });
+          });
+        }
       });
 
-      console.log("valid numbers: " + validNumbers);
-      part1 = validNumbers.reduce((p, q) => p + q, 0);
+      const validArray = Array.from(validNumbers).map((x) => x[0]);
+
+      part1 = validArray.reduce((a, b) => a + b, 0);
+
+      console.log(validNumbers);
+
       setParts({
         part1: part1,
         part2: 0,
@@ -94,4 +89,27 @@ export default function Day03() {
       results={parts}
     ></Puzzle>
   );
+
+  function getSymbolIndexes(schematic: string[][]) {
+    const symbolIndexes: number[][] = [];
+    for (let rowIndex = 0; rowIndex < schematic.length; rowIndex++) {
+      const row = schematic[rowIndex];
+      for (let columnIndex = 0; columnIndex < row.length; columnIndex++) {
+        const item = row[columnIndex];
+        const match = [...item.matchAll(symbolRegex)];
+        if (match.length > 0) {
+          symbolIndexes.push([rowIndex, columnIndex]);
+        }
+      }
+    }
+    return symbolIndexes;
+  }
+
+  function getSchematic(data: string[]) {
+    const schematic: string[][] = [];
+    data.forEach((row) => {
+      schematic.push(row.split(""));
+    });
+    return schematic;
+  }
 }
