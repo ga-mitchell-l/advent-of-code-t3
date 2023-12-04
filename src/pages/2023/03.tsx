@@ -26,7 +26,7 @@ export default function Day03() {
 
   const processData = (data: string[] | undefined) => {
     if (data) {
-      const validNumbers = new Set<number[]>();
+      const validNumbersAndIndexesJSONSet = new Set<string>();
       const schematic: string[][] = getSchematic(data);
       const symbolIndexes: number[][] = getSymbolIndexes(schematic);
 
@@ -42,31 +42,50 @@ export default function Day03() {
 
           const middleRow = data[rowIndex];
           // console.log(" - - - middle row - - - ");
-          EvaluateRow(middleRow, columnIndex, validNumbers, rowIndex);
+          EvaluateRow(
+            middleRow,
+            columnIndex,
+            validNumbersAndIndexesJSONSet,
+            rowIndex,
+          );
 
           const topRowIndex = rowIndex - 1;
           if (topRowIndex > -1) {
             const topRow = data[rowIndex - 1];
             // console.log(" - - - top row - - - ");
-            EvaluateRow(topRow, columnIndex, validNumbers, topRowIndex);
+            EvaluateRow(
+              topRow,
+              columnIndex,
+              validNumbersAndIndexesJSONSet,
+              topRowIndex,
+            );
           }
 
           const bottomRowIndex = rowIndex + 1;
           if (bottomRowIndex < data.length) {
             const bottomRow = data[rowIndex + 1];
             // console.log("- -  - - bottom row - - - -");
-            EvaluateRow(bottomRow, columnIndex, validNumbers, bottomRowIndex);
+            EvaluateRow(
+              bottomRow,
+              columnIndex,
+              validNumbersAndIndexesJSONSet,
+              bottomRowIndex,
+            );
           }
         }
       }
 
-      const hooch = Array.from(validNumbers);
-      const farg = hooch.map((x) => x[0]);
-      const ploof = farg.reduce((a, b) => a + b, 0);
-      console.log(farg);
+      const validNumbersAndIndexesJSONArray = Array.from(
+        validNumbersAndIndexesJSONSet,
+      );
+      const validNumbersAndIndexes: number[][] =
+        validNumbersAndIndexesJSONArray.map((x) => JSON.parse(x));
+      const validNumbers = validNumbersAndIndexes.map((x) => x[0]);
+      const validNumberSum = validNumbers.reduce((a, b) => a + b, 0);
+      console.log(validNumbersAndIndexes);
 
       setParts({
-        part1: ploof,
+        part1: validNumberSum,
         part2: 0,
       });
     }
@@ -84,7 +103,7 @@ export default function Day03() {
   function EvaluateRow(
     row: string,
     columnIndex: number,
-    validNumbers: Set<number[]>,
+    validNumbers: Set<string>,
     rowIndex: number,
   ) {
     const [middle, middleIndex] = getMiddle(row, columnIndex);
@@ -93,20 +112,23 @@ export default function Day03() {
     console.log(middleIndex);
     if (middle > 0) {
       console.log("middle: " + middle);
-      validNumbers.add([middle, rowIndex, middleIndex]);
+      validNumbers.add(JSON.stringify([middle, rowIndex, middleIndex]));
+      validNumbers.add(JSON.stringify([middle, rowIndex, middleIndex]));
       return; // if there is a number in the middle we won't have diagonals or left or right
     }
 
     const [left, leftIndex] = getLeft(row, columnIndex, -1);
     if (left > 0) {
       console.log("left: " + left);
-      validNumbers.add([left, rowIndex, leftIndex]);
+      validNumbers.add(JSON.stringify([left, rowIndex, leftIndex]));
+      validNumbers.add(JSON.stringify([left, rowIndex, leftIndex]));
     }
 
     const [right, rightIndex] = getLeft(row, columnIndex, 1);
     if (right > 0) {
       console.log("right: " + right);
-      validNumbers.add([right, rowIndex, rightIndex]);
+      validNumbers.add(JSON.stringify([right, rowIndex, rightIndex]));
+      validNumbers.add(JSON.stringify([right, rowIndex, rightIndex]));
     }
   }
 
