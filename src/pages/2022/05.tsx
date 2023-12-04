@@ -2,6 +2,7 @@ import { api } from "~/utils/api";
 import { useState } from "react";
 import Puzzle from "~/components/Puzzle";
 import type { PartResults } from "~/classes/PuzzleResults";
+import { GetNumberArray } from "@utils/react";
 
 export default function Day05() {
   const [parts, setParts] = useState<PartResults>({
@@ -31,10 +32,7 @@ export default function Day05() {
       return 0;
     }
 
-    const columns = columnsRow
-      .split(" ")
-      .filter((x) => x != "")
-      .map(Number);
+    const columns = GetNumberArray(columnsRow);
     return Math.max(...columns);
   };
 

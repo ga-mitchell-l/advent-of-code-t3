@@ -23,3 +23,10 @@ export const SortDescending = (input: number[]): number[] => {
     .reverse();
   return input;
 };
+
+export const GetNumberArray = (my: string): number[] => {
+  return my
+    .split(" ")
+    .filter((x) => x != "")
+    .map((x) => Number(x));
+};

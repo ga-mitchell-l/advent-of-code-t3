@@ -2,6 +2,7 @@ import { api } from "~/utils/api";
 import { useState } from "react";
 import Puzzle from "~/components/Puzzle";
 import type { PartResults } from "~/classes/PuzzleResults";
+import { GetNumberArray } from "@utils/react";
 
 export default function Day04() {
   const [parts, setParts] = useState<PartResults>({
@@ -35,11 +36,14 @@ export default function Day04() {
 
       data.forEach((row) => {
         const { cardNumber, winningCount } = getCardDetails(row);
+        // console.log(cardNumber);
         cardDict[cardNumber] = winningCount;
 
         let points = getPart1Points(winningCount);
         totalScratchCardPoints += points;
       });
+
+      console.log(Object.keys(cardDict).length);
 
       let totalNumberOfScratchCards = 0;
       for (let i = 0; i < data.length; i++) {
@@ -84,11 +88,11 @@ export default function Day04() {
 
   function getCardDetails(row: string) {
     const [card, numbers] = row.split(":");
-    const cardNumber = Number(card.split(" ")[1]);
+    const cardNumber = Number(card.split(" ").filter((x) => x != "")[1]);
     const [winning, my] = numbers.split("|");
 
-    const winningNumbers = getNumberArray(winning);
-    const myNumbers = getNumberArray(my);
+    const winningNumbers = GetNumberArray(winning);
+    const myNumbers = GetNumberArray(my);
 
     const myWinningNumbers = winningNumbers.filter((x) =>
       myNumbers.includes(x),
@@ -103,12 +107,5 @@ export default function Day04() {
       points = 2 ** (winningCount - 1);
     }
     return points;
-  }
-
-  function getNumberArray(my: string) {
-    return my
-      .split(" ")
-      .filter((x) => x != "")
-      .map((x) => Number(x));
   }
 }
