@@ -23,39 +23,32 @@ export default function Day04() {
     "Card 5: 87 83 26 28 32 | 88 30 70 12 93 22 82 36",
     "Card 6: 31 18 13 56 72 | 74 77 10 23 35 67 36 11",
   ];
+  let cardDict: { [key: number]: number } = {};
 
   const processData = (data: string[] | undefined) => {
     // list of winning numbers and then a list of numbers you have seperated by a vertical bar
     // you have to figure out which of the numbers you have appear in the list of winning numbers.
     // The first match makes the card worth one point and each match after the first doubles the point value of that card.
-    data = ["Card 1: 41 48 83 86 17 | 83 86  6 31 17  9 48 53"];
+    // data = ["Card 1: 41 48 83 86 17 | 83 86  6 31 17  9 48 53"];
     if (data) {
       let totalScratchCardPoints = 0;
-      let cardDict = {};
 
       data.forEach((row) => {
-        console.log("-----------");
-        console.log(row);
         const { cardNumber, winningCount } = getCardDetails(row);
         cardDict[cardNumber] = winningCount;
-        console.log("number of winners: " + winningCount);
 
         let points = getPart1Points(winningCount);
-
-        // scratchcards only cause you to win more scratchcards equal to the number of winning numbers you have.
-        // you win copies of the scratchcards below the winning card equal to the number of matches.
-        // So, if card 10 were to have 5 matching numbers, you would win one copy each of cards 11, 12, 13, 14, and 15.
-        // Copies of scratchcards are scored like normal scratchcards and have the same card number as the card they copied.
-        // So, if you win a copy of card 10 and it has 5 matching numbers, it would then win a copy of the same cards that the original card 10 won:
-        // cards 11, 12, 13, 14, and 15. This process repeats until none of the copies cause you to win any more cards.
-        // (Cards will never make you copy a card past the end of the table.)
-
         totalScratchCardPoints += points;
       });
 
+      let totalNumberOfScratchCards = 0;
+      for (let i = 0; i < data.length; i++) {
+        totalNumberOfScratchCards += RecursiveCards(i + 1);
+      }
+
       setParts({
         part1: totalScratchCardPoints,
-        part2: 0,
+        part2: totalNumberOfScratchCards,
       });
     }
   };
@@ -69,6 +62,26 @@ export default function Day04() {
     ></Puzzle>
   );
 
+  function RecursiveCards(index: number): number {
+    // scratchcards only cause you to win more scratchcards equal to the number of winning numbers you have.
+    // you win copies of the scratchcards below the winning card equal to the number of matches.
+    // So, if card 10 were to have 5 matching numbers, you would win one copy each of cards 11, 12, 13, 14, and 15.
+    // Copies of scratchcards are scored like normal scratchcards and have the same card number as the card they copied.
+    // So, if you win a copy of card 10 and it has 5 matching numbers, it would then win a copy of the same cards that the original card 10 won:
+    // cards 11, 12, 13, 14, and 15. This process repeats until none of the copies cause you to win any more cards.
+    // (Cards will never make you copy a card past the end of the table.)
+    const winningCount = cardDict[index];
+
+    let total = 1;
+    for (let i = 1; i < winningCount + 1; i++) {
+      total += RecursiveCards(index + i);
+    }
+
+    // console.log("card: " + index + " total: " + total);
+
+    return total;
+  }
+
   function getCardDetails(row: string) {
     const [card, numbers] = row.split(":");
     const cardNumber = Number(card.split(" ")[1]);
@@ -80,8 +93,6 @@ export default function Day04() {
     const myWinningNumbers = winningNumbers.filter((x) =>
       myNumbers.includes(x),
     );
-    console.log("my winning numbers: " + myWinningNumbers);
-
     const winningCount = myWinningNumbers.length;
     return { cardNumber, winningCount };
   }
