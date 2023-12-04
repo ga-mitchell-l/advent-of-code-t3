@@ -2,6 +2,7 @@ import { api } from "~/utils/api";
 import { useState } from "react";
 import Puzzle from "~/components/Puzzle";
 import type { PartResults } from "~/classes/PuzzleResults";
+import { sign } from "crypto";
 
 export default function Day03() {
   const [parts, setParts] = useState<PartResults>({
@@ -32,34 +33,36 @@ export default function Day03() {
 
       const schematic: string[][] = getSchematic(data);
       const symbolIndexes: number[][] = getSymbolIndexes(schematic);
+      if (symbolIndexes.length > 0) {
+        for (let i = 0; i < 10; i++) {
+          // }
 
-      for (let i = 0; i < 10; i++) {
-        // }
+          // symbolIndexes.forEach((symbolIndex) => {
+          let symbolIndex = symbolIndexes[i];
+          // console.log(symbolIndex);
+          const [rowIndex, columnIndex] = symbolIndex;
+          console.log("----------------");
+          console.log("SYMBOL: " + rowIndex + ", " + columnIndex);
 
-        // symbolIndexes.forEach((symbolIndex) => {
-        let symbolIndex = symbolIndexes[i];
-        // console.log(symbolIndex);
-        const [rowIndex, columnIndex] = symbolIndex;
-        console.log("----------------");
-        console.log("SYMBOL: " + rowIndex + ", " + columnIndex);
+          const middleRow = data[rowIndex];
+          const farb = middleRow.slice(columnIndex - 3, columnIndex + 3);
+          console.log("middle row: " + farb);
+          const [left, leftIndex] = getLeft(middleRow, columnIndex, -1);
+          if (left > 0) {
+            console.log("left: " + left);
+            validNumbers.add([left, rowIndex, leftIndex]);
+          }
 
-        const middleRow = data[rowIndex];
-        const farb = middleRow.slice(columnIndex - 3, columnIndex + 3);
-        console.log("middle row: " + farb);
-        const [left, leftIndex] = getLeft(middleRow, columnIndex - 1);
-        if (left > 0) {
-          console.log("left: " + left);
-          validNumbers.add([left, rowIndex, leftIndex]);
+          // const topRowIndex = rowIndex - 1;
+          // if (topRowIndex > 0) {
+          //   const topRow = data[rowIndex - 1];
+          // }
+
+          // const bottomRowIndex = rowIndex + 1;
+          // if (bottomRowIndex < data.length) {
+          //   const bottomRow = data[rowIndex + 1];
+          // }
         }
-        // const topRowIndex = rowIndex - 1;
-        // if (topRowIndex > 0) {
-        //   const topRow = data[rowIndex - 1];
-        // }
-
-        // const bottomRowIndex = rowIndex + 1;
-        // if (bottomRowIndex < data.length) {
-        //   const bottomRow = data[rowIndex + 1];
-        // }
       }
 
       console.log(validNumbers);
@@ -80,20 +83,25 @@ export default function Day03() {
     ></Puzzle>
   );
 
-  function getLeft(adjRow: string, columnIndex: number): number[] {
+  function getLeft(
+    adjRow: string,
+    symbolIndex: number,
+    direction: sign,
+  ): number[] {
     const noStuff = [0, 0];
-    if (columnIndex < 0 || columnIndex > adjRow.length - 1) {
+    const aIndex = symbolIndex + 1 * direction;
+    if (aIndex < 0 || aIndex > adjRow.length - 1) {
       return noStuff;
     }
-
-    const ai = adjRow[columnIndex];
+    const ai = adjRow[aIndex];
     const a = Number(ai);
     if (isNaN(a)) {
+      console.log("return 1");
       return noStuff;
     }
 
-    const aStuff = [a, columnIndex];
-    const bIndex = columnIndex - 1;
+    const aStuff = [a, aIndex];
+    const bIndex = symbolIndex + 2 * direction;
     if (bIndex < 0 || bIndex > adjRow.length - 1) {
       return aStuff;
     }
@@ -104,7 +112,7 @@ export default function Day03() {
     }
 
     const bStuff = [Number(bi + ai), bIndex];
-    const cIndex = columnIndex - 2;
+    const cIndex = symbolIndex + 3 * direction;
     if (cIndex < 0 || cIndex > adjRow.length - 1) {
       return bStuff;
     }
@@ -139,4 +147,6 @@ export default function Day03() {
     });
     return schematic;
   }
+
+  type sign = 1 | -1;
 }
