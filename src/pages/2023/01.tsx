@@ -109,7 +109,7 @@ export default function Day01() {
   function Part2(row: string): number {
     let reverseRow = reverseString(row);
     for (let i = 0; i < row.length; i++) {
-      for (let key in numberDict) {
+      for (const key in numberDict) {
         const keylength = key.length;
         const keyslice = row.slice(i, i + keylength);
         if (keyslice == key) {

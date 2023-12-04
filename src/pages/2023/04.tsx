@@ -24,7 +24,7 @@ export default function Day04() {
     "Card 5: 87 83 26 28 32 | 88 30 70 12 93 22 82 36",
     "Card 6: 31 18 13 56 72 | 74 77 10 23 35 67 36 11",
   ];
-  let cardDict: { [key: number]: number } = {};
+  const cardDict: { [key: number]: number } = {};
 
   const processData = (data: string[] | undefined) => {
     // list of winning numbers and then a list of numbers you have seperated by a vertical bar
@@ -36,19 +36,14 @@ export default function Day04() {
 
       data.forEach((row) => {
         const { cardNumber, winningCount } = getCardDetails(row);
-        // console.log(cardNumber);
         cardDict[cardNumber] = winningCount;
 
-        let points = getPart1Points(winningCount);
+        const points = getPart1Points(winningCount);
         totalScratchCardPoints += points;
       });
 
-      console.log(Object.keys(cardDict).length);
-
-      let totalNumberOfScratchCards = 0;
-      for (let i = 0; i < data.length; i++) {
-        totalNumberOfScratchCards += RecursiveCards(i + 1);
-      }
+      cardDict[0] = data.length;
+      const totalNumberOfScratchCards = RecursiveCards(0) - 1;
 
       setParts({
         part1: totalScratchCardPoints,
@@ -74,14 +69,11 @@ export default function Day04() {
     // So, if you win a copy of card 10 and it has 5 matching numbers, it would then win a copy of the same cards that the original card 10 won:
     // cards 11, 12, 13, 14, and 15. This process repeats until none of the copies cause you to win any more cards.
     // (Cards will never make you copy a card past the end of the table.)
-    const winningCount = cardDict[index];
 
     let total = 1;
-    for (let i = 1; i < winningCount + 1; i++) {
+    for (let i = 1; i < cardDict[index] + 1; i++) {
       total += RecursiveCards(index + i);
     }
-
-    // console.log("card: " + index + " total: " + total);
 
     return total;
   }
@@ -89,10 +81,9 @@ export default function Day04() {
   function getCardDetails(row: string) {
     const [card, numbers] = row.split(":");
     const cardNumber = Number(card.split(" ").filter((x) => x != "")[1]);
-    const [winning, my] = numbers.split("|");
-
-    const winningNumbers = GetNumberArray(winning);
-    const myNumbers = GetNumberArray(my);
+    const [winningNumbers, myNumbers] = numbers
+      .split("|")
+      .map((x) => GetNumberArray(x));
 
     const myWinningNumbers = winningNumbers.filter((x) =>
       myNumbers.includes(x),

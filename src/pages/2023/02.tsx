@@ -45,7 +45,7 @@ export default function Day02() {
         handfulls.forEach((handfull) => {
           const die = handfull.split(", ");
           die.forEach((dice) => {
-            let [stringQuantity, colour] = dice.split(" ");
+            const [stringQuantity, colour] = dice.split(" ");
             const quantity = Number(stringQuantity);
             switch (colour) {
               case "red":

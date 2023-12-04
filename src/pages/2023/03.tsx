@@ -34,7 +34,7 @@ export default function Day03() {
       const symbolIndexes: number[][] = getSymbolIndexes(schematic);
 
       symbolIndexes.forEach((symbolIndex) => {
-        let [rowIndex, columnIndex] = symbolIndex;
+        const [rowIndex, columnIndex] = symbolIndex;
         console.log("----------------");
         console.log("SYMBOL: " + rowIndex + ", " + columnIndex);
 
