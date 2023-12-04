@@ -30,50 +30,39 @@ export default function Day03() {
       const schematic: string[][] = getSchematic(data);
       const symbolIndexes: number[][] = getSymbolIndexes(schematic);
 
-      if (symbolIndexes.length > 0) {
-        for (let i = 0; i < Math.min(10, symbolIndexes.length); i++) {
-          // }
+      symbolIndexes.forEach((symbolIndex) => {
+        const [rowIndex, columnIndex] = symbolIndex;
 
-          // symbolIndexes.forEach((symbolIndex) => {
-          let symbolIndex = symbolIndexes[i];
-          const [rowIndex, columnIndex] = symbolIndex;
-          // console.log("----------------");
-          // console.log("SYMBOL: " + rowIndex + ", " + columnIndex);
+        const middleRow = data[rowIndex];
+        EvaluateRow(
+          middleRow,
+          columnIndex,
+          validNumbersAndIndexesJSONSet,
+          rowIndex,
+        );
 
-          const middleRow = data[rowIndex];
-          // console.log(" - - - middle row - - - ");
+        const topRowIndex = rowIndex - 1;
+        if (topRowIndex > -1) {
+          const topRow = data[rowIndex - 1];
           EvaluateRow(
-            middleRow,
+            topRow,
             columnIndex,
             validNumbersAndIndexesJSONSet,
-            rowIndex,
+            topRowIndex,
           );
-
-          const topRowIndex = rowIndex - 1;
-          if (topRowIndex > -1) {
-            const topRow = data[rowIndex - 1];
-            // console.log(" - - - top row - - - ");
-            EvaluateRow(
-              topRow,
-              columnIndex,
-              validNumbersAndIndexesJSONSet,
-              topRowIndex,
-            );
-          }
-
-          const bottomRowIndex = rowIndex + 1;
-          if (bottomRowIndex < data.length) {
-            const bottomRow = data[rowIndex + 1];
-            // console.log("- -  - - bottom row - - - -");
-            EvaluateRow(
-              bottomRow,
-              columnIndex,
-              validNumbersAndIndexesJSONSet,
-              bottomRowIndex,
-            );
-          }
         }
-      }
+
+        const bottomRowIndex = rowIndex + 1;
+        if (bottomRowIndex < data.length) {
+          const bottomRow = data[rowIndex + 1];
+          EvaluateRow(
+            bottomRow,
+            columnIndex,
+            validNumbersAndIndexesJSONSet,
+            bottomRowIndex,
+          );
+        }
+      });
 
       const validNumbersAndIndexesJSONArray = Array.from(
         validNumbersAndIndexesJSONSet,
@@ -82,7 +71,6 @@ export default function Day03() {
         validNumbersAndIndexesJSONArray.map((x) => JSON.parse(x));
       const validNumbers = validNumbersAndIndexes.map((x) => x[0]);
       const validNumberSum = validNumbers.reduce((a, b) => a + b, 0);
-      console.log(validNumbersAndIndexes);
 
       setParts({
         part1: validNumberSum,
@@ -107,27 +95,18 @@ export default function Day03() {
     rowIndex: number,
   ) {
     const [middle, middleIndex] = getMiddle(row, columnIndex);
-    console.log("middle returned");
-    console.log(middle);
-    console.log(middleIndex);
     if (middle > 0) {
-      console.log("middle: " + middle);
-      validNumbers.add(JSON.stringify([middle, rowIndex, middleIndex]));
       validNumbers.add(JSON.stringify([middle, rowIndex, middleIndex]));
       return; // if there is a number in the middle we won't have diagonals or left or right
     }
 
     const [left, leftIndex] = getLeft(row, columnIndex, -1);
     if (left > 0) {
-      console.log("left: " + left);
-      validNumbers.add(JSON.stringify([left, rowIndex, leftIndex]));
       validNumbers.add(JSON.stringify([left, rowIndex, leftIndex]));
     }
 
     const [right, rightIndex] = getLeft(row, columnIndex, 1);
     if (right > 0) {
-      console.log("right: " + right);
-      validNumbers.add(JSON.stringify([right, rowIndex, rightIndex]));
       validNumbers.add(JSON.stringify([right, rowIndex, rightIndex]));
     }
   }
@@ -141,7 +120,6 @@ export default function Day03() {
     const maxLeft = Math.max(0, symbolIndex - 2);
     const maxRight = Math.min(adjRow.length, symbolIndex + 3);
     const stringUnderConsideration = adjRow.slice(maxLeft, maxRight);
-    console.log("SUC: " + stringUnderConsideration);
 
     const matches = [...stringUnderConsideration.matchAll(digitRegex)];
     if (matches.length == 0) {
@@ -153,15 +131,12 @@ export default function Day03() {
       const indexLeft = match.index;
       const numberString = match[0];
       const indexRight = indexLeft + numberString.length;
-      console.log(numberString + " " + indexLeft + "-" + indexRight);
 
       if (indexLeft > 2 || 2 > indexRight) {
         return;
       }
 
-      console.log("in range");
       const middle = Number(numberString);
-      console.log("!!!!!!" + middle);
       const matchIndex = indexLeft + maxLeft;
       compatible.push([middle, matchIndex]);
     });
