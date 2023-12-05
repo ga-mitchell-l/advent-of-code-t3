@@ -3,7 +3,6 @@ import { useState } from "react";
 import Puzzle from "~/components/Puzzle";
 import type { PartResults } from "~/classes/PuzzleResults";
 import { GetNumberArray } from "@utils/react";
-import { number } from "zod";
 
 export default function Day05() {
   const [parts, setParts] = useState<PartResults>({
@@ -25,7 +24,6 @@ export default function Day05() {
 
   type AlmanacMap = {
     sourceCategory: string;
-    destinationCategory: string;
     ranges: Range[];
   };
 
@@ -43,31 +41,28 @@ export default function Day05() {
   function GetEmptyAlmanacMap() {
     const map: AlmanacMap = {
       sourceCategory: "",
-      destinationCategory: "",
       ranges: [],
     };
     return map;
-  }
-
-  function getRangeArray(start, length): number[] {
-    return Array.from({ length: length }, (value, index) => start + index);
   }
 
   const processData = (data: string[] | undefined) => {
     if (data) {
       const results = ProcessInput(data);
 
-      const soils: number[] = MoveToDestination(
-        results.seeds,
-        results.almanacMaps[0].ranges,
-      );
+      let source = results.seeds;
+      results.almanacMaps.forEach((map) => {
+        source = MoveToDestination(source, map.ranges);
+      });
 
       console.log(results.almanacMaps);
       console.log("seeds: " + results.seeds);
-      console.log("soils: " + soils);
+      console.log("locations: " + source);
+
+      const minLocation = Math.min(...source);
 
       setParts({
-        part1: 0,
+        part1: minLocation,
         part2: 0,
       });
     }
@@ -85,13 +80,10 @@ export default function Day05() {
   function MoveToDestination(seeds: number[], mapRanges: Range[]): number[] {
     const soils: number[] = [];
     seeds.forEach((seed) => {
-      console.log("--- SEEDS ---");
-      console.log(seed);
       const mapsInRange = mapRanges.filter(
         (range) =>
           range.souceRangeStart <= seed && seed <= range.sourceRangeEnd,
       );
-      console.log(mapsInRange);
       if (mapsInRange.length == 1) {
         const destination = mapsInRange[0].destinationDiff + seed;
         soils.push(destination);
@@ -128,9 +120,8 @@ export default function Day05() {
         }
 
         const currentSection = heading.split(" ")[0];
-        const [source, _, destination] = currentSection.split("-");
+        const source = currentSection.split("-")[0];
         currentAlmanacMap.sourceCategory = source;
-        currentAlmanacMap.destinationCategory = destination;
 
         return;
       }
@@ -138,12 +129,6 @@ export default function Day05() {
       // process map rows
       const [destinationRangeStart, sourceRangeStart, rangeLength] =
         GetNumberArray(row);
-
-      const sourceRange = getRangeArray(sourceRangeStart, rangeLength);
-      const destinationRange = getRangeArray(
-        destinationRangeStart,
-        rangeLength,
-      );
 
       const range: Range = {
         souceRangeStart: sourceRangeStart,
@@ -153,6 +138,10 @@ export default function Day05() {
 
       currentAlmanacMap.ranges.push(range);
     });
+
+    if (currentAlmanacMap.sourceCategory != "") {
+      almanacMaps.push(currentAlmanacMap);
+    }
 
     return { seeds: seeds, almanacMaps: almanacMaps };
   }
