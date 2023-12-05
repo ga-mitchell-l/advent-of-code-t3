@@ -57,10 +57,10 @@ export default function Day05() {
     if (data) {
       const results = ProcessInput(data);
 
-      const seedToSoilMap = results.almanacMaps.filter(
-        (x) => x.sourceCategory == "seed",
-      )[0];
-      const soils: number[] = MoveToDestination(results, seedToSoilMap);
+      const soils: number[] = MoveToDestination(
+        results.seeds,
+        results.almanacMaps[0].ranges,
+      );
 
       console.log(results.almanacMaps);
       console.log("seeds: " + results.seeds);
@@ -82,34 +82,12 @@ export default function Day05() {
     ></Puzzle>
   );
 
-  function MoveToDestination(
-    results: {
-      seeds: number[];
-      almanacMaps: {
-        sourceCategory: string;
-        destinationCategory: string;
-        ranges: {
-          souceRangeStart: number;
-          sourceRangeEnd: number;
-          destinationDiff: number;
-        }[];
-      }[];
-    },
-    seedToSoilMap: {
-      sourceCategory: string;
-      destinationCategory: string;
-      ranges: {
-        souceRangeStart: number;
-        sourceRangeEnd: number;
-        destinationDiff: number;
-      }[];
-    },
-  ) {
+  function MoveToDestination(seeds: number[], mapRanges: Range[]): number[] {
     const soils: number[] = [];
-    results.seeds.forEach((seed) => {
+    seeds.forEach((seed) => {
       console.log("--- SEEDS ---");
       console.log(seed);
-      const mapsInRange = seedToSoilMap.ranges.filter(
+      const mapsInRange = mapRanges.filter(
         (range) =>
           range.souceRangeStart <= seed && seed <= range.sourceRangeEnd,
       );
