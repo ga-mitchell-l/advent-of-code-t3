@@ -3,6 +3,7 @@ import { useState } from "react";
 import Puzzle from "~/components/Puzzle";
 import type { PartResults } from "~/classes/PuzzleResults";
 import { GetNumberArray } from "@utils/react";
+import { number } from "zod";
 
 export default function Day05() {
   const [parts, setParts] = useState<PartResults>({
@@ -25,7 +26,7 @@ export default function Day05() {
   type AlmanacMap = {
     sourceCategory: string;
     destinationCategory: string;
-    map: { [key: number]: number };
+    ranges: Range[];
   };
 
   type ReturnType = {
@@ -33,11 +34,17 @@ export default function Day05() {
     almanacMaps: AlmanacMap[];
   };
 
+  type Range = {
+    souceRangeStart: number;
+    sourceRangeEnd: number;
+    destinationDiff: number;
+  };
+
   function GetEmptyAlmanacMap() {
     const map: AlmanacMap = {
       sourceCategory: "",
       destinationCategory: "",
-      map: {},
+      ranges: [],
     };
     return map;
   }
@@ -50,8 +57,15 @@ export default function Day05() {
     if (data) {
       const results = ProcessInput(data);
 
+      const seedToSoilMap = results.almanacMaps.filter(
+        (x) => x.sourceCategory == "seed",
+      )[0];
+      const soils: number[] = MoveToDestination(results, seedToSoilMap);
+
       console.log(results.almanacMaps);
-      console.log(results.seeds);
+      console.log("seeds: " + results.seeds);
+      console.log("soils: " + soils);
+
       setParts({
         part1: 0,
         part2: 0,
@@ -67,6 +81,48 @@ export default function Day05() {
       results={parts}
     ></Puzzle>
   );
+
+  function MoveToDestination(
+    results: {
+      seeds: number[];
+      almanacMaps: {
+        sourceCategory: string;
+        destinationCategory: string;
+        ranges: {
+          souceRangeStart: number;
+          sourceRangeEnd: number;
+          destinationDiff: number;
+        }[];
+      }[];
+    },
+    seedToSoilMap: {
+      sourceCategory: string;
+      destinationCategory: string;
+      ranges: {
+        souceRangeStart: number;
+        sourceRangeEnd: number;
+        destinationDiff: number;
+      }[];
+    },
+  ) {
+    const soils: number[] = [];
+    results.seeds.forEach((seed) => {
+      console.log("--- SEEDS ---");
+      console.log(seed);
+      const mapsInRange = seedToSoilMap.ranges.filter(
+        (range) =>
+          range.souceRangeStart <= seed && seed <= range.sourceRangeEnd,
+      );
+      console.log(mapsInRange);
+      if (mapsInRange.length == 1) {
+        const destination = mapsInRange[0].destinationDiff + seed;
+        soils.push(destination);
+      } else {
+        soils.push(seed);
+      }
+    });
+    return soils;
+  }
 
   function ProcessInput(data: string[]): ReturnType {
     let seeds: number[] = [];
@@ -111,9 +167,13 @@ export default function Day05() {
         rangeLength,
       );
 
-      for (let i = 0; i < sourceRange.length; i++) {
-        currentAlmanacMap.map[sourceRange[i]] = destinationRange[i];
-      }
+      const range: Range = {
+        souceRangeStart: sourceRangeStart,
+        sourceRangeEnd: sourceRangeStart + rangeLength - 1,
+        destinationDiff: -sourceRangeStart + destinationRangeStart,
+      };
+
+      currentAlmanacMap.ranges.push(range);
     });
 
     return { seeds: seeds, almanacMaps: almanacMaps };
