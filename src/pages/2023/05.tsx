@@ -53,13 +53,10 @@ export default function Day05() {
 
       let source = results.seeds;
       let part2Source = results.seedRanges;
-      // results.almanacMaps.forEach((map) => {
-      //   source = MoveToDestination(source, map.ranges);
-      // });
-      for (let i = 0; i < results.almanacMaps.length; i++) {
-        const map = results.almanacMaps[i];
+      results.almanacMaps.forEach((map) => {
+        source = MoveToDestination(source, map.ranges);
         part2Source = RangeMoveToDestination(part2Source, map.ranges);
-      }
+      });
 
       const minLocation = Math.min(...source);
       const part2Locations = part2Source.map((x) => x[0]);
