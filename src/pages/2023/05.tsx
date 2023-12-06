@@ -30,18 +30,13 @@ export default function Day05() {
   type ReturnType = {
     seeds: number[];
     almanacMaps: AlmanacMap[];
-    seedRanges: Range[];
+    seedRanges: number[][];
   };
 
   type RangeMap = {
     souceRangeStart: number;
     sourceRangeEnd: number;
     destinationDiff: number;
-  };
-
-  type Range = {
-    start: number;
-    end: number;
   };
 
   function GetEmptyAlmanacMap() {
@@ -109,10 +104,10 @@ export default function Day05() {
   }
 
   function RangeMoveToDestination(
-    sources: Range[],
+    sources: number[][],
     mapRanges: RangeMap[],
-  ): Range[] {
-    const destinations: Range[] = [];
+  ): number[][] {
+    const destinations: number[][] = [];
 
     console.log("sources: ");
     console.log(sources);
@@ -124,8 +119,8 @@ export default function Day05() {
       console.log(source);
       console.log("sources left: " + sources.length);
 
-      const start = source.start;
-      const end = source.end;
+      const start = source[0];
+      const end = source[1];
       const mapsInRangeSource = mapRanges.filter(
         (range) =>
           range.souceRangeStart <= start && start <= range.sourceRangeEnd,
@@ -137,7 +132,7 @@ export default function Day05() {
         // range is not included in any map
         // map to itself
         console.log("range not included in map");
-        const destination: Range = { start: start, end: end };
+        const destination: number[] = [start, end];
         destinations.push(destination);
         console.log(destinations);
       } else if (mapsInRangeSource.length == 1) {
@@ -146,18 +141,18 @@ export default function Day05() {
         if (end <= map.sourceRangeEnd) {
           console.log("range totally included in map");
           // range is included in map totally
-          const destination: Range = {
-            start: start + map.destinationDiff,
-            end: end + map.destinationDiff,
-          };
+          const destination: number[] = [
+            start + map.destinationDiff,
+            end + map.destinationDiff,
+          ];
           destinations.push(destination);
           console.log(destinations);
         } else {
           console.log("range partially included in map");
           // split up the range and do it again
-          const rangeLeft: Range = { start: start, end: map.sourceRangeEnd };
+          const rangeLeft: number[] = [start, map.sourceRangeEnd];
           sources.push(rangeLeft);
-          const rangeRight: Range = { start: map.sourceRangeEnd + 1, end: end };
+          const rangeRight: number[] = [map.sourceRangeEnd + 1, end];
           sources.push(rangeRight);
           console.log("new number of sources: " + sources.length);
         }
@@ -169,7 +164,7 @@ export default function Day05() {
 
   function ProcessInput(data: string[]): ReturnType {
     let seeds: number[] = [];
-    let seedRanges: Range[] = [];
+    let seedRanges: number[][] = [];
     const almanacMaps: AlmanacMap[] = [];
     let currentAlmanacMap = GetEmptyAlmanacMap();
 
@@ -192,10 +187,7 @@ export default function Day05() {
           seeds = GetNumberArray(seedString);
 
           for (let i = 0; i < seeds.length; i += 2) {
-            const range: Range = {
-              start: seeds[i],
-              end: seeds[i] + seeds[i + 1] - 1,
-            };
+            const range = [seeds[i], seeds[i] + seeds[i + 1] - 1];
             seedRanges.push(range);
           }
           return;
