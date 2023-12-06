@@ -112,13 +112,16 @@ export default function Day05() {
           ];
           destinations.push(destination);
         } else {
-          // split up the range and do it again
+          // only the start is in the map
+          // split up the range and process again
           const rangeLeft: number[] = [start, map.sourceRangeEnd];
           sources.push(rangeLeft);
           const rangeRight: number[] = [map.sourceRangeEnd + 1, end];
           sources.push(rangeRight);
         }
       } else if (mapsInRangeDestination.length == 1) {
+        // only the end is in the map
+        // split up the range and process
         const map = mapsInRangeDestination[0];
         const rangeLeft: number[] = [start, map.souceRangeStart - 1];
         const rangeRight: number[] = [map.souceRangeStart, end];
