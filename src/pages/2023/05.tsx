@@ -100,8 +100,7 @@ export default function Day05() {
       if (mapsInRangeSource.length == 0 && mapsInRangeDestination.length == 0) {
         // range is not included in any map
         // map to itself
-        const destination: number[] = [start, end];
-        destinations.push(destination);
+        destinations.push(source);
       } else if (
         mapsInRangeSource.length == 1 &&
         mapsInRangeDestination.length == 1 &&
@@ -141,7 +140,7 @@ export default function Day05() {
 
   function ProcessInput(data: string[]): ReturnType {
     let part1Seeds: number[][] = [];
-    let part2Seeds: number[][] = [];
+    const part2Seeds: number[][] = [];
     const almanacMaps: AlmanacMap[] = [];
     let currentAlmanacMap = GetEmptyAlmanacMap();
 
