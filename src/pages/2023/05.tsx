@@ -102,26 +102,32 @@ export default function Day05() {
         // map to itself
         const destination: number[] = [start, end];
         destinations.push(destination);
-      } else if (mapsInRangeSource.length == 1) {
+      } else if (
+        mapsInRangeSource.length == 1 &&
+        mapsInRangeDestination.length == 1 &&
+        mapsInRangeSource[0].souceRangeStart ==
+          mapsInRangeDestination[0].souceRangeStart
+      ) {
+        // range is included in one map totally
         const map = mapsInRangeSource[0];
         if (end <= map.sourceRangeEnd) {
-          // range is included in map totally
           const destination: number[] = [
             start + map.destinationDiff,
             end + map.destinationDiff,
           ];
           destinations.push(destination);
-        } else {
-          // only the start is in the map
-          // split up the range and process again
-          const rangeLeft: number[] = [start, map.sourceRangeEnd];
-          sources.push(rangeLeft);
-          const rangeRight: number[] = [map.sourceRangeEnd + 1, end];
-          sources.push(rangeRight);
         }
+      } else if (mapsInRangeSource.length == 1) {
+        // start of range is included in a map
+        // split up the range and process again
+        const map = mapsInRangeSource[0];
+        const rangeLeft: number[] = [start, map.sourceRangeEnd];
+        const rangeRight: number[] = [map.sourceRangeEnd + 1, end];
+        sources.push(rangeLeft);
+        sources.push(rangeRight);
       } else if (mapsInRangeDestination.length == 1) {
-        // only the end is in the map
-        // split up the range and process
+        // end of range is included in a map
+        // split up the range and process again
         const map = mapsInRangeDestination[0];
         const rangeLeft: number[] = [start, map.souceRangeStart - 1];
         const rangeRight: number[] = [map.souceRangeStart, end];
