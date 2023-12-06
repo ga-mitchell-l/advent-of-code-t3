@@ -28,9 +28,9 @@ export default function Day05() {
   };
 
   type ReturnType = {
-    seeds: number[];
+    part1Seeds: number[][];
     almanacMaps: AlmanacMap[];
-    seedRanges: number[][];
+    part2Seeds: number[][];
   };
 
   type RangeMap = {
@@ -51,19 +51,20 @@ export default function Day05() {
     if (data) {
       const results = ProcessInput(data);
 
-      let source = results.seeds;
-      let part2Source = results.seedRanges;
+      let part1Source = results.part1Seeds;
+      let part2Source = results.part2Seeds;
       results.almanacMaps.forEach((map) => {
-        source = MoveToDestination(source, map.ranges);
+        part1Source = RangeMoveToDestination(part1Source, map.ranges);
         part2Source = RangeMoveToDestination(part2Source, map.ranges);
       });
 
-      const minLocation = Math.min(...source);
+      const part1Locations = part1Source.map((x) => x[0]);
+      const minPart1Location = Math.min(...part1Locations);
       const part2Locations = part2Source.map((x) => x[0]);
       const minPart2Location = Math.min(...part2Locations);
 
       setParts({
-        part1: minLocation,
+        part1: minPart1Location,
         part2: minPart2Location,
       });
     }
@@ -77,26 +78,6 @@ export default function Day05() {
       results={parts}
     ></Puzzle>
   );
-
-  function MoveToDestination(
-    sources: number[],
-    mapRanges: RangeMap[],
-  ): number[] {
-    const destinations: number[] = [];
-    sources.forEach((source) => {
-      const mapsInRange = mapRanges.filter(
-        (range) =>
-          range.souceRangeStart <= source && source <= range.sourceRangeEnd,
-      );
-      if (mapsInRange.length == 1) {
-        const destination = mapsInRange[0].destinationDiff + source;
-        destinations.push(destination);
-      } else {
-        destinations.push(source);
-      }
-    });
-    return destinations;
-  }
 
   function RangeMoveToDestination(
     sources: number[][],
@@ -150,8 +131,8 @@ export default function Day05() {
   }
 
   function ProcessInput(data: string[]): ReturnType {
-    let seeds: number[] = [];
-    let seedRanges: number[][] = [];
+    let part1Seeds: number[][] = [];
+    let part2Seeds: number[][] = [];
     const almanacMaps: AlmanacMap[] = [];
     let currentAlmanacMap = GetEmptyAlmanacMap();
 
@@ -171,11 +152,12 @@ export default function Day05() {
         const heading = colonSplit[0];
         if (heading == "seeds") {
           const seedString = colonSplit[1];
-          seeds = GetNumberArray(seedString);
+          const seeds = GetNumberArray(seedString);
+          part1Seeds = seeds.map((x) => [x, x]);
 
           for (let i = 0; i < seeds.length; i += 2) {
             const range = [seeds[i], seeds[i] + seeds[i + 1] - 1];
-            seedRanges.push(range);
+            part2Seeds.push(range);
           }
           return;
         }
@@ -204,6 +186,10 @@ export default function Day05() {
       almanacMaps.push(currentAlmanacMap);
     }
 
-    return { seeds: seeds, almanacMaps: almanacMaps, seedRanges: seedRanges };
+    return {
+      part1Seeds: part1Seeds,
+      almanacMaps: almanacMaps,
+      part2Seeds: part2Seeds,
+    };
   }
 }
