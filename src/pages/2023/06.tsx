@@ -28,57 +28,46 @@ export default function Day06() {
 
       const times = GetNumberArray(timeString);
       const distances = GetNumberArray(distanceString);
-      const raceWinningWays: number[] = [];
-      for (let race = 0; race < times.length; race++) {
-        console.log("---- RACE ---");
-        const raceTime = times[race];
-        const raceDistance = distances[race];
-        console.log("time: " + raceTime + " distance: " + raceDistance);
-        const timesForMinDistance = QuadraticFormula(
-          raceTime,
-          raceDistance + 1,
-        );
-        const minimumChargeTime = Math.ceil(Math.min(...timesForMinDistance));
-        const maxChargeTime = Math.floor(Math.max(...timesForMinDistance));
 
-        console.log("min charge time: " + minimumChargeTime);
-        console.log("max charge time: " + maxChargeTime);
-        const numberOfWays = maxChargeTime - minimumChargeTime + 1;
-        raceWinningWays.push(numberOfWays);
-
-        // let winningChargingTimes: number[] = [];
-        // for (
-        //   let chargeTime = minimumChargeTime + 1;
-        //   chargeTime < maxChargeTime;
-        //   chargeTime++
-        // ) {
-        //   console.log(chargeTime);
-        //   const myDistance =
-        //   // console.log(negative);
-        //   // console.log(positive);
-        //   // if (negative > raceDistance) {
-        //   //   winningChargingTimes.push(negative);
-        //   // }
-
-        //   // if (positive > raceDistance) {
-        //   //   winningChargingTimes.push(positive);
-        //   // }
-        // }
-        // console.log(winningChargingTimes);
-      }
-      console.log(raceWinningWays);
-      const marginOfError = raceWinningWays.reduce((a, b) => a * b, 1);
+      const marginOfError = part1(times, distances);
+      const part2NumberOfWays = part2(times, distances);
 
       setParts({
         part1: marginOfError,
-        part2: 0,
+        part2: part2NumberOfWays,
       });
+    }
+
+    function part2(times: number[], distances: number[]) {
+      const part2Time = Number(times.join(""));
+      const part2Distance = Number(distances.join(""));
+      const part2NumberOfWays = getNumberOfWaysToWin(part2Time, part2Distance);
+      return part2NumberOfWays;
+    }
+
+    function part1(times: number[], distances: number[]) {
+      const raceWinningWays: number[] = [];
+      for (let race = 0; race < times.length; race++) {
+        const raceTime = times[race];
+        const raceDistance = distances[race];
+        const numberOfWays = getNumberOfWaysToWin(raceTime, raceDistance);
+        raceWinningWays.push(numberOfWays);
+      }
+      const marginOfError = raceWinningWays.reduce((a, b) => a * b, 1);
+      return marginOfError;
     }
   };
 
+  function getNumberOfWaysToWin(raceTime: number, raceDistance: number) {
+    const timesForMinDistance = QuadraticFormula(raceTime, raceDistance + 1);
+    const minimumChargeTime = Math.ceil(Math.min(...timesForMinDistance));
+    const maxChargeTime = Math.floor(Math.max(...timesForMinDistance));
+
+    const numberOfWays = maxChargeTime - minimumChargeTime + 1;
+    return numberOfWays;
+  }
+
   function QuadraticFormula(time: number, distance: number): number[] {
-    const a = time ** 2;
-    const b = 4 * distance;
     const square = time * time + -(4 * distance);
     const squareRoot = Math.sqrt(square);
     const positive = (-time + squareRoot) / -2;
