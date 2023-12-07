@@ -22,9 +22,14 @@ export default function Day07() {
     "KTJJT 220",
     "QQQJA 483",
   ];
+  const cardRank = "23456789TJQKA";
 
   const processData = (data: string[] | undefined) => {
     if (data) {
+      data.forEach((row) => {
+        const [hand, bidString] = row.split(" ");
+        const bid = Number(bidString);
+      });
       setParts({
         part1: 0,
         part2: 0,
