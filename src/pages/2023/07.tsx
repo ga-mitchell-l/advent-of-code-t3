@@ -23,11 +23,13 @@ export default function Day07() {
     "QQQJA 483",
   ];
   const cardRank = "23456789TJQKA".split("");
+  const jokerCardRank = "J23456789TQKA".split("");
   type Hand = {
     hand: string;
     type: number;
     rank: number[];
     bid: number;
+    jokerType: number;
   };
 
   const handTypes = [0, 1, 2, 3, 4, 5, 6];
@@ -36,6 +38,8 @@ export default function Day07() {
     if (data) {
       const hands: Hand[] = getHands(data);
       const orderedHands: Hand[] = orderHands(hands);
+
+      console.log(orderedHands);
 
       const totalWinnings = orderedHands.reduce(
         (accumulator, currentValue, index) => {
@@ -51,7 +55,7 @@ export default function Day07() {
     }
   };
 
-  const GetHandType = (handArray: string[]): number => {
+  const GetHandType = (handArray: string[], joker: boolean): number => {
     // 6 - Five of a kind
     // 5 - Four of a kind
     // 4 - Full house
@@ -70,6 +74,13 @@ export default function Day07() {
     }
 
     if (letterCount[0] == 4 || letterCount[1] == 4) {
+      if (joker && letterCount[0] == 4) {
+        const otherLetter = handArray.filter((x) => x != handArray[0])[0];
+        if (otherLetter == "J") {
+          // five of a kind
+          return 6;
+        }
+      }
       // four of a kind
       return 5;
     }
@@ -85,6 +96,11 @@ export default function Day07() {
       }
 
       const notThree = handArray.filter((letter) => letter != repeatingLetter);
+
+      if (joker && (notThree[0] == "J" || notThree[1] == "J")) {
+        // four of a kind
+        return 5;
+      }
 
       if (notThree[0] == notThree[1]) {
         // full house
@@ -102,12 +118,32 @@ export default function Day07() {
       Number(letterCount[3] == 2) +
       Number(letterCount[4] == 2);
 
+    const jokerCount = handArray.filter((x) => x == "J").length;
+
     if (count == 4) {
+      if (joker) {
+        if (jokerCount == 2) {
+          // four of a kind
+          return 5;
+        } else if (jokerCount == 1) {
+          // full house
+          return 4;
+        }
+      }
       // two pair
       return 2;
     }
 
     if (count == 2) {
+      if (joker && jokerCount == 1) {
+        // three of a kind
+        return 3;
+      }
+      // one pair
+      return 1;
+    }
+
+    if (joker && jokerCount == 1) {
       // one pair
       return 1;
     }
@@ -125,9 +161,7 @@ export default function Day07() {
     ></Puzzle>
   );
 
-  function orderHands(
-    hands: { hand: string; type: number; rank: number[]; bid: number }[],
-  ): Hand[] {
+  function orderHands(hands: Hand[]): Hand[] {
     const orderedHands: Hand[] = [];
     for (let i = 0; i < handTypes.length; i++) {
       const handsOfType = hands.filter((hand) => hand.type == i);
@@ -152,11 +186,13 @@ export default function Day07() {
       const [handString, bidString] = row.split(" ");
       const handArray = handString.split("");
       const bid = Number(bidString);
-      const type = GetHandType(handArray);
+      const type = GetHandType(handArray, false);
+      const jokerType = GetHandType(handArray, true);
       const rank = handArray.map((letter) => cardRank.indexOf(letter));
       const hand: Hand = {
         hand: handString,
         type: type,
+        jokerType: jokerType,
         rank: rank,
         bid: bid,
       };
