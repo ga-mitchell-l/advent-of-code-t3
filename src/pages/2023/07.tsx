@@ -37,33 +37,36 @@ export default function Day07() {
 
   const processData = (data: string[] | undefined) => {
     if (data) {
-      const hands: Hand[] = getHands(data);
-      const orderedHands: Hand[] = orderHands(
-        JSON.parse(JSON.stringify(hands)),
-        false,
-      );
-      const jokerOrderedHands: Hand[] = orderHands(
-        JSON.parse(JSON.stringify(hands)),
-        true,
-      );
+      const test = "AJJAA".split("");
+      const garb = GetHandType(test, true);
+      console.log(test + ": " + garb);
 
-      const totalWinnings = orderedHands.reduce(
-        (accumulator, currentValue, index) => {
-          return accumulator + (index + 1) * currentValue.bid;
-        },
-        0,
-      );
+      // const hands: Hand[] = getHands(data);
+      // const orderedHands: Hand[] = orderHands(
+      //   JSON.parse(JSON.stringify(hands)),
+      //   false,
+      // );
+      // const jokerOrderedHands: Hand[] = orderHands(
+      //   JSON.parse(JSON.stringify(hands)),
+      //   true,
+      // );
 
-      const jokerTotalWinnings = jokerOrderedHands.reduce(
-        (accumulator, currentValue, index) => {
-          return accumulator + (index + 1) * currentValue.bid;
-        },
-        0,
-      );
+      // const totalWinnings = getTotalWinnings(orderedHands);
+      // const jokerTotalWinnings = getTotalWinnings(jokerOrderedHands);
+
+      // const foo = jokerOrderedHands.map((x) => x.hand + " - " + x.jokerType);
+      // for (let i = 0; i < foo.length; i++) {
+      //   console.log(foo[i]);
+      // }
+
+      // setParts({
+      //   part1: totalWinnings,
+      //   part2: jokerTotalWinnings,
+      // });
 
       setParts({
-        part1: totalWinnings,
-        part2: jokerTotalWinnings,
+        part1: 0,
+        part2: 0,
       });
     }
   };
@@ -107,12 +110,21 @@ export default function Day07() {
       } else {
         repeatingLetter = handArray[2];
       }
+      console.log("repeating letter: " + repeatingLetter);
 
       const notThree = handArray.filter((letter) => letter != repeatingLetter);
+      console.log(notThree);
 
-      if (joker && (notThree[0] == "J" || notThree[1] == "J")) {
-        // four of a kind
-        return 5;
+      if (joker) {
+        if (notThree[0] == "J" && notThree[1] == "J") {
+          // full house
+          return 6;
+        }
+
+        if (notThree[0] == "J" || notThree[1] == "J") {
+          // four of a kind
+          return 5;
+        }
       }
 
       if (notThree[0] == notThree[1]) {
@@ -173,6 +185,21 @@ export default function Day07() {
       results={parts}
     ></Puzzle>
   );
+
+  function getTotalWinnings(
+    orderedHands: {
+      hand: string;
+      type: number;
+      rank: number[];
+      jokerRank: number[];
+      bid: number;
+      jokerType: number;
+    }[],
+  ) {
+    return orderedHands.reduce((accumulator, currentValue, index) => {
+      return accumulator + (index + 1) * currentValue.bid;
+    }, 0);
+  }
 
   function orderHands(hands: Hand[], joker: boolean): Hand[] {
     const orderedHands: Hand[] = [];
