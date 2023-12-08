@@ -28,6 +28,7 @@ export default function Day07() {
     hand: string;
     type: number;
     rank: number[];
+    jokerRank: number[];
     bid: number;
     jokerType: number;
   };
@@ -37,9 +38,14 @@ export default function Day07() {
   const processData = (data: string[] | undefined) => {
     if (data) {
       const hands: Hand[] = getHands(data);
-      const orderedHands: Hand[] = orderHands(hands);
-
-      console.log(orderedHands);
+      const orderedHands: Hand[] = orderHands(
+        JSON.parse(JSON.stringify(hands)),
+        false,
+      );
+      const jokerOrderedHands: Hand[] = orderHands(
+        JSON.parse(JSON.stringify(hands)),
+        true,
+      );
 
       const totalWinnings = orderedHands.reduce(
         (accumulator, currentValue, index) => {
@@ -48,9 +54,16 @@ export default function Day07() {
         0,
       );
 
+      const jokerTotalWinnings = jokerOrderedHands.reduce(
+        (accumulator, currentValue, index) => {
+          return accumulator + (index + 1) * currentValue.bid;
+        },
+        0,
+      );
+
       setParts({
         part1: totalWinnings,
-        part2: 0,
+        part2: jokerTotalWinnings,
       });
     }
   };
@@ -161,17 +174,33 @@ export default function Day07() {
     ></Puzzle>
   );
 
-  function orderHands(hands: Hand[]): Hand[] {
+  function orderHands(hands: Hand[], joker: boolean): Hand[] {
     const orderedHands: Hand[] = [];
     for (let i = 0; i < handTypes.length; i++) {
       const handsOfType = hands.filter((hand) => hand.type == i);
-      const rankOrderedHandsOfType = handsOfType.sort(function (a, b) {
+      const jokerHandsOfType = hands.filter((hand) => hand.jokerType == i);
+
+      let tempHands: Hand[] = [];
+      if (joker) {
+        tempHands = jokerHandsOfType;
+      } else {
+        tempHands = handsOfType;
+      }
+      const rankOrderedHandsOfType = tempHands.sort(function (a, b) {
         let j = 0;
         while (j < 5) {
-          if (a.rank[j] == b.rank[j]) {
-            j++;
+          if (joker) {
+            if (a.jokerRank[j] == b.jokerRank[j]) {
+              j++;
+            } else {
+              return a.jokerRank[j] - b.jokerRank[j];
+            }
           } else {
-            return a.rank[j] - b.rank[j];
+            if (a.rank[j] == b.rank[j]) {
+              j++;
+            } else {
+              return a.rank[j] - b.rank[j];
+            }
           }
         }
       });
@@ -189,11 +218,15 @@ export default function Day07() {
       const type = GetHandType(handArray, false);
       const jokerType = GetHandType(handArray, true);
       const rank = handArray.map((letter) => cardRank.indexOf(letter));
+      const jokerRank = handArray.map((letter) =>
+        jokerCardRank.indexOf(letter),
+      );
       const hand: Hand = {
         hand: handString,
         type: type,
         jokerType: jokerType,
         rank: rank,
+        jokerRank: jokerRank,
         bid: bid,
       };
       hands.push(hand);
