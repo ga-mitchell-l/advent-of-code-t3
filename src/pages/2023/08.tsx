@@ -33,6 +33,18 @@ export default function Day08() {
     "BBB = (AAA, ZZZ)",
     "ZZZ = (ZZZ, ZZZ)",
   ];
+  const exampleData3 = [
+    "LR",
+    "",
+    "11A = (11B, XXX)",
+    "11B = (XXX, 11Z)",
+    "11Z = (11B, XXX)",
+    "22A = (22B, XXX)",
+    "22B = (22C, 22C)",
+    "22C = (22Z, 22Z)",
+    "22Z = (22B, 22B)",
+    "XXX = (XXX, XXX)",
+  ];
   const startNode = "AAA";
   const finishNode = "ZZZ";
 
@@ -42,24 +54,12 @@ export default function Day08() {
       data.shift(); // empty row
 
       const nodeDict = getNodes(data);
-      let currentNode = startNode;
+      let instructionIndex = part1(instructions, nodeDict);
 
-      let instructionIndex = 0;
-      while (currentNode != finishNode) {
-        const instructionIndexMod = instructionIndex % instructions.length;
-        let currentInstruction = instructions[instructionIndexMod];
-
-        switch (currentInstruction) {
-          case "L":
-            currentNode = nodeDict[currentNode][0];
-            break;
-          case "R":
-            currentNode = nodeDict[currentNode][1];
-            break;
-        }
-
-        instructionIndex++;
-      }
+      let startingNodes = Object.keys(nodeDict).filter(
+        (node) => node[node.length - 1] === "A",
+      );
+      console.log(startingNodes);
 
       setParts({
         part1: instructionIndex,
@@ -76,6 +76,31 @@ export default function Day08() {
       results={parts}
     ></Puzzle>
   );
+
+  function part1(
+    instructions: string[],
+    nodeDict: { [key: string]: [string, string] },
+  ) {
+    let currentNode = startNode;
+
+    let instructionIndex = 0;
+    while (currentNode != finishNode) {
+      const instructionIndexMod = instructionIndex % instructions.length;
+      let currentInstruction = instructions[instructionIndexMod];
+
+      switch (currentInstruction) {
+        case "L":
+          currentNode = nodeDict[currentNode][0];
+          break;
+        case "R":
+          currentNode = nodeDict[currentNode][1];
+          break;
+      }
+
+      instructionIndex++;
+    }
+    return instructionIndex;
+  }
 
   function getNodes(data: string[]) {
     const nodeDict: { [key: string]: [string, string] } = {};
