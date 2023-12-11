@@ -2,6 +2,7 @@ import { api } from "~/utils/api";
 import { useState } from "react";
 import Puzzle from "~/components/Puzzle";
 import type { PartResults } from "~/classes/PuzzleResults";
+import { GetNumberArray } from "@utils/react";
 
 export default function Day09() {
   const [parts, setParts] = useState<PartResults>({
@@ -23,8 +24,22 @@ export default function Day09() {
 
   const processData = (data: string[] | undefined) => {
     if (data) {
+      // data = ["0 3 6 9 12 15"];
+      let part1Sum = 0;
+      data.forEach((row) => {
+        const sequence = GetNumberArray(row);
+
+        let history: number[][] = getHistory(sequence);
+        let currentValue = 0;
+        for (let i = 1; i < history.length + 1; i++) {
+          const currentSequence = history[history.length - i];
+          currentValue += currentSequence[currentSequence.length - 1];
+        }
+        part1Sum += currentValue;
+      });
+
       setParts({
-        part1: 0,
+        part1: part1Sum,
         part2: 0,
       });
     }
@@ -38,4 +53,23 @@ export default function Day09() {
       results={parts}
     ></Puzzle>
   );
+
+  function getHistory(sequence: number[]) {
+    let history: number[][] = [];
+    history.push(sequence);
+
+    while (
+      history[history.length - 1].filter((x) => x == 0).length !=
+      history[history.length - 1].length
+    ) {
+      const newSequence: number[] = [];
+      const currentSequence = history[history.length - 1];
+      for (let i = 1; i < currentSequence.length; i++) {
+        const diff = currentSequence[i] - currentSequence[i - 1];
+        newSequence.push(diff);
+      }
+      history.push(newSequence);
+    }
+    return history;
+  }
 }
