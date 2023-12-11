@@ -44,12 +44,25 @@ export default function Day08() {
       const nodeDict = getNodes(data);
       let currentNode = startNode;
 
-      let steps = 0;
       let instructionIndex = 0;
-      while (currentNode != finishNode) {}
+      while (currentNode != finishNode) {
+        const instructionIndexMod = instructionIndex % instructions.length;
+        let currentInstruction = instructions[instructionIndexMod];
+
+        switch (currentInstruction) {
+          case "L":
+            currentNode = nodeDict[currentNode][0];
+            break;
+          case "R":
+            currentNode = nodeDict[currentNode][1];
+            break;
+        }
+
+        instructionIndex++;
+      }
 
       setParts({
-        part1: 0,
+        part1: instructionIndex,
         part2: 0,
       });
     }
@@ -58,7 +71,7 @@ export default function Day08() {
   return (
     <Puzzle
       handleGetResults={() => processData(data)}
-      handleExampleGetResults={() => processData(exampleData)}
+      handleExampleGetResults={() => processData(exampleData2)}
       day={day}
       results={parts}
     ></Puzzle>
