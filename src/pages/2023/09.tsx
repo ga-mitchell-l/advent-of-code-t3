@@ -25,19 +25,24 @@ export default function Day09() {
   const processData = (data: string[] | undefined) => {
     if (data) {
       let part1Sum = 0;
+      let part2Sum = 0;
       data.forEach((row) => {
         const sequence = GetNumberArray(row);
 
         const history: number[][] = getHistory(sequence);
+        let beginning = 0;
         for (let i = 1; i < history.length + 1; i++) {
           const currentSequence = history[history.length - i];
           part1Sum += currentSequence[currentSequence.length - 1];
+          beginning = currentSequence[0] - beginning;
+          console.log(beginning);
         }
+        part2Sum += beginning;
       });
 
       setParts({
         part1: part1Sum,
-        part2: 0,
+        part2: part2Sum,
       });
     }
   };
