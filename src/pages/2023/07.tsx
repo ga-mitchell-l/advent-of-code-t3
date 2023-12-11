@@ -38,10 +38,6 @@ export default function Day07() {
 
   const processData = (data: string[] | undefined) => {
     if (data) {
-      // const test = "JJ842".split("");
-      // const garb = GetHandType(test, true);
-      // console.log(test + ": " + garb);
-
       const hands: Hand[] = getHands(data);
       const orderedHands: Hand[] = orderHands(
         JSON.parse(JSON.stringify(hands)),
@@ -166,7 +162,7 @@ export default function Day07() {
     }
 
     if (count == 2) {
-      if (joker && jokerCount > 1) {
+      if (joker && jokerCount > 0) {
         // three of a kind
         return 3;
       }
