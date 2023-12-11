@@ -24,6 +24,7 @@ export default function Day07() {
   ];
   const cardRank = "23456789TJQKA".split("");
   const jokerCardRank = "J23456789TQKA".split("");
+  const jokerCard = "J";
   type Hand = {
     hand: string;
     type: number;
@@ -37,9 +38,9 @@ export default function Day07() {
 
   const processData = (data: string[] | undefined) => {
     if (data) {
-      const test = "AJJAA".split("");
-      const garb = GetHandType(test, true);
-      console.log(test + ": " + garb);
+      // const test = "JJ842".split("");
+      // const garb = GetHandType(test, true);
+      // console.log(test + ": " + garb);
 
       const hands: Hand[] = getHands(data);
       const orderedHands: Hand[] = orderHands(
@@ -50,26 +51,18 @@ export default function Day07() {
         JSON.parse(JSON.stringify(hands)),
         true,
       );
-
       const totalWinnings = getTotalWinnings(orderedHands);
       const jokerTotalWinnings = getTotalWinnings(jokerOrderedHands);
-
       const foo = jokerOrderedHands
-        .filter((x) => x.hand.indexOf("J") != -1)
+        .filter((x) => x.hand.indexOf(jokerCard) != -1 && x.jokerType == 1)
         .map((x) => x.hand + " - " + x.jokerType);
       for (let i = 0; i < foo.length; i++) {
         console.log(foo[i]);
       }
-
       setParts({
         part1: totalWinnings,
         part2: jokerTotalWinnings,
       });
-
-      // setParts({
-      //   part1: 0,
-      //   part2: 0,
-      // });
     }
   };
 
@@ -85,7 +78,7 @@ export default function Day07() {
     const letterCount = handArray.map(
       (letter) => handArray.filter((x) => x == letter).length,
     );
-    const jokerCount = handArray.filter((x) => x == "J").length;
+    const jokerCount = handArray.filter((x) => x == jokerCard).length;
 
     if (letterCount[0] == 5) {
       // five of a kind
@@ -93,9 +86,16 @@ export default function Day07() {
     }
 
     if (letterCount[0] == 4 || letterCount[1] == 4) {
-      if (joker && letterCount[0] == 4) {
-        const otherLetter = handArray.filter((x) => x != handArray[0])[0];
-        if (otherLetter == "J") {
+      let repeatingLetter = "";
+      if (letterCount[0] == 4) {
+        repeatingLetter = handArray[0];
+      } else {
+        repeatingLetter = handArray[1];
+      }
+
+      if (joker) {
+        const otherLetter = handArray.filter((x) => x != repeatingLetter)[0];
+        if (otherLetter == jokerCard || repeatingLetter == jokerCard) {
           // five of a kind
           return 6;
         }
@@ -113,18 +113,23 @@ export default function Day07() {
       } else {
         repeatingLetter = handArray[2];
       }
-      console.log("repeating letter: " + repeatingLetter);
 
       const notThree = handArray.filter((letter) => letter != repeatingLetter);
-      console.log(notThree);
 
       if (joker) {
-        if (notThree[0] == "J" && notThree[1] == "J") {
+        if (
+          (repeatingLetter == jokerCard && notThree[0] == notThree[1]) ||
+          (notThree[0] == jokerCard && notThree[1] == jokerCard)
+        ) {
           // full house
           return 6;
         }
 
-        if (notThree[0] == "J" || notThree[1] == "J") {
+        if (
+          (repeatingLetter == jokerCard && notThree[0] != notThree[1]) ||
+          notThree[0] == jokerCard ||
+          notThree[1] == jokerCard
+        ) {
           // four of a kind
           return 5;
         }
@@ -161,7 +166,7 @@ export default function Day07() {
     }
 
     if (count == 2) {
-      if (joker && jokerCount == 1) {
+      if (joker && jokerCount > 1) {
         // three of a kind
         return 3;
       }
