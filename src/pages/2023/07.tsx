@@ -41,33 +41,35 @@ export default function Day07() {
       const garb = GetHandType(test, true);
       console.log(test + ": " + garb);
 
-      // const hands: Hand[] = getHands(data);
-      // const orderedHands: Hand[] = orderHands(
-      //   JSON.parse(JSON.stringify(hands)),
-      //   false,
-      // );
-      // const jokerOrderedHands: Hand[] = orderHands(
-      //   JSON.parse(JSON.stringify(hands)),
-      //   true,
-      // );
+      const hands: Hand[] = getHands(data);
+      const orderedHands: Hand[] = orderHands(
+        JSON.parse(JSON.stringify(hands)),
+        false,
+      );
+      const jokerOrderedHands: Hand[] = orderHands(
+        JSON.parse(JSON.stringify(hands)),
+        true,
+      );
 
-      // const totalWinnings = getTotalWinnings(orderedHands);
-      // const jokerTotalWinnings = getTotalWinnings(jokerOrderedHands);
+      const totalWinnings = getTotalWinnings(orderedHands);
+      const jokerTotalWinnings = getTotalWinnings(jokerOrderedHands);
 
-      // const foo = jokerOrderedHands.map((x) => x.hand + " - " + x.jokerType);
-      // for (let i = 0; i < foo.length; i++) {
-      //   console.log(foo[i]);
-      // }
-
-      // setParts({
-      //   part1: totalWinnings,
-      //   part2: jokerTotalWinnings,
-      // });
+      const foo = jokerOrderedHands
+        .filter((x) => x.hand.indexOf("J") != -1)
+        .map((x) => x.hand + " - " + x.jokerType);
+      for (let i = 0; i < foo.length; i++) {
+        console.log(foo[i]);
+      }
 
       setParts({
-        part1: 0,
-        part2: 0,
+        part1: totalWinnings,
+        part2: jokerTotalWinnings,
       });
+
+      // setParts({
+      //   part1: 0,
+      //   part2: 0,
+      // });
     }
   };
 
@@ -83,6 +85,7 @@ export default function Day07() {
     const letterCount = handArray.map(
       (letter) => handArray.filter((x) => x == letter).length,
     );
+    const jokerCount = handArray.filter((x) => x == "J").length;
 
     if (letterCount[0] == 5) {
       // five of a kind
@@ -142,8 +145,6 @@ export default function Day07() {
       Number(letterCount[2] == 2) +
       Number(letterCount[3] == 2) +
       Number(letterCount[4] == 2);
-
-    const jokerCount = handArray.filter((x) => x == "J").length;
 
     if (count == 4) {
       if (joker) {
