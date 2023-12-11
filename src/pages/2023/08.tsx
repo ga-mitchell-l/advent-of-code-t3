@@ -46,24 +46,21 @@ export default function Day08() {
     "XXX = (XXX, XXX)",
   ];
   const startNode = "AAA";
-  const finishNode = "ZZZ";
 
   const processData = (data: string[] | undefined) => {
     if (data) {
       const instructions = data.shift().split("");
+      console.log("instruction length: " + instructions.length);
       data.shift(); // empty row
 
       const nodeDict = getNodes(data);
-      let instructionIndex = part1(instructions, nodeDict);
+      let instructionIndex = part1(instructions, nodeDict, startNode);
 
-      let startingNodes = Object.keys(nodeDict).filter(
-        (node) => node[node.length - 1] === "A",
-      );
-      console.log(startingNodes);
+      const part2 = getPart2(nodeDict, instructions);
 
       setParts({
         part1: instructionIndex,
-        part2: 0,
+        part2: part2,
       });
     }
   };
@@ -71,20 +68,41 @@ export default function Day08() {
   return (
     <Puzzle
       handleGetResults={() => processData(data)}
-      handleExampleGetResults={() => processData(exampleData2)}
+      handleExampleGetResults={() => processData(exampleData3)}
       day={day}
       results={parts}
     ></Puzzle>
   );
 
+  function getPart2(
+    nodeDict: { [key: string]: [string, string] },
+    instructions: string[],
+  ) {
+    let startingNodes = Object.keys(nodeDict).filter(
+      (node) => node[node.length - 1] === "A",
+    );
+    let zIndexes: number[] = [];
+    startingNodes.forEach((node) => {
+      const zIndex = part1(instructions, nodeDict, node);
+      zIndexes.push(zIndex);
+    });
+
+    const instructionCycles = zIndexes.map((x) => x / instructions.length);
+
+    const multiples = instructionCycles.reduce((a, b) => a * b, 1);
+    const part2 = multiples * instructions.length;
+    return part2;
+  }
+
   function part1(
     instructions: string[],
     nodeDict: { [key: string]: [string, string] },
+    startNode: string,
   ) {
     let currentNode = startNode;
 
     let instructionIndex = 0;
-    while (currentNode != finishNode) {
+    while (currentNode[currentNode.length - 1] != "Z") {
       const instructionIndexMod = instructionIndex % instructions.length;
       let currentInstruction = instructions[instructionIndexMod];
 
