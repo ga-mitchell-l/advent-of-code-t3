@@ -54,7 +54,7 @@ export default function Day08() {
       data.shift(); // empty row
 
       const nodeDict = getNodes(data);
-      let instructionIndex = part1(instructions, nodeDict, startNode);
+      const instructionIndex = part1(instructions, nodeDict, startNode);
 
       const part2 = getPart2(nodeDict, instructions);
 
@@ -78,10 +78,10 @@ export default function Day08() {
     nodeDict: { [key: string]: [string, string] },
     instructions: string[],
   ) {
-    let startingNodes = Object.keys(nodeDict).filter(
-      (node) => node[node.length - 1] === "A",
+    const startingNodes = Object.keys(nodeDict).filter((node) =>
+      node.endsWith("A"),
     );
-    let zIndexes: number[] = [];
+    const zIndexes: number[] = [];
     startingNodes.forEach((node) => {
       const zIndex = part1(instructions, nodeDict, node);
       zIndexes.push(zIndex);
@@ -102,7 +102,7 @@ export default function Day08() {
     let currentNode = startNode;
 
     let instructionIndex = 0;
-    while (currentNode[currentNode.length - 1] != "Z") {
+    while (!currentNode.endsWith("Z")) {
       const instructionIndexMod = instructionIndex % instructions.length;
       let currentInstruction = instructions[instructionIndexMod];
 
