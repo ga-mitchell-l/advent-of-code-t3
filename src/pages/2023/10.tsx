@@ -16,66 +16,81 @@ export default function Day10() {
     day: day,
   }).data;
   const exampleData: string[] = [".....", ".S-7.", ".|.|.", ".L-J.", "....."];
-  const nViable = ["|", "F", "7"];
-  const eViable = ["-", "J", "7"];
-  const sViable = ["|", "J", "L"];
-  const wViable = ["-", "L", "F"];
+  const exampleData2 = ["..F7.", ".FJ|.", "SJ.L7", "|F--J", "LJ..."];
+  const directiontoPipeDict: { [key: string]: [string, string, string] } = {
+    n: ["|", "F", "7"],
+    e: ["-", "J", "7"],
+    s: ["|", "J", "L"],
+    w: ["-", "L", "F"],
+  };
+  const pipeToDirectionDict: { [key: string]: [string, string] } = {
+    "|": ["n", "s"],
+    "-": ["e", "w"],
+    L: ["n", "e"],
+    J: ["n", "w"],
+    "7": ["s", "w"],
+    F: ["s", "e"],
+  };
 
   type direction = {
     index: [number, number];
-    viableChars: string[];
     name: string;
   };
 
   const processData = (data: string[] | undefined) => {
     if (data) {
-      let rowCount = data.length;
-      let columnCount = data[0].length;
+      const rowCount = data.length;
+      const columnCount = data[0].length;
 
-      var { start, pipes }: { start: [number, number]; pipes: string[][] } =
+      const { start, pipes }: { start: [number, number]; pipes: string[][] } =
         getInputValues(data);
 
       replaceStartingPipe(start, pipes, rowCount, columnCount);
 
-      // let currentPosition = start;
-      // let startFound = false;
-      // let stepCount = 0;
-      // let previousPosition: [number, number];
+      let currentPosition = start;
+      let startFound = false;
+      let stepCount = 0;
+      let previousPosition: [number, number];
+      let horriblyWrong = false;
 
-      // while (startFound === false) {
-      //   console.log("----------");
-      //   console.log("current position: " + currentPosition);
-      //   const v = pipes[currentPosition[0]][currentPosition[1]];
-      //   console.log("value: " + v);
+      while (!startFound && !horriblyWrong) {
+        const currentValue = pipes[currentPosition[0]][currentPosition[1]];
+        const directions = getDirections(currentPosition);
+        const viable = directions.map((d) =>
+          isDirectionViable(
+            d,
+            pipes,
+            rowCount,
+            columnCount,
+            previousPosition,
+            currentValue,
+          ),
+        );
 
-      //   const directions = getDirections(currentPosition);
+        const viableIndex = viable.indexOf(true);
+        const viableDirection = directions[viableIndex];
+        const viableCount = viable.filter((x) => x).length;
+        if (
+          viableCount != 1 &&
+          !(currentPosition[0] == start[0] && currentPosition[1] == start[1])
+        ) {
+          horriblyWrong = true;
+          continue;
+        }
 
-      //   const viable = directions.map((d) =>
-      //     isDirectionViable(d, pipes, rowCount, columnCount, previousPosition),
-      //   );
-      //   console.log(viable);
+        previousPosition = currentPosition;
+        currentPosition = viableDirection.index;
 
-      //   let directionFound = false;
-      //   let next: [number, number];
-      //   let i = 0;
-      //   while (directionFound === false) {
-      //     directionFound = viable[i];
-      //     next = directions[i].index;
-      //     i++;
-      //   }
+        startFound =
+          currentPosition[0] === start[0] && currentPosition[1] === start[1];
 
-      //   previousPosition = currentPosition;
-      //   currentPosition = next;
-      //   console.log("new position: " + currentPosition);
+        stepCount++;
+      }
 
-      //   startFound =
-      //     currentPosition[0] === start[0] && currentPosition[1] === start[1];
-
-      //   stepCount++;
-      // }
+      const maxDistance = stepCount / 2;
 
       setParts({
-        part1: 0,
+        part1: maxDistance,
         part2: 0,
       });
     }
@@ -106,6 +121,7 @@ export default function Day10() {
     rowMax: number,
     columnMax: number,
     previousPosition: [number, number],
+    currentValue: string,
   ): boolean => {
     if (
       direction.index[0] < 0 ||
@@ -113,6 +129,7 @@ export default function Day10() {
       direction.index[1] < 0 ||
       direction.index[1] >= columnMax
     ) {
+      // direction goes off the map of pipes
       return false;
     }
 
@@ -121,11 +138,22 @@ export default function Day10() {
       direction.index[0] == previousPosition[0] &&
       direction.index[1] == previousPosition[1]
     ) {
+      // direction goes back where we were previously
       return false;
     }
 
+    if (currentValue != "") {
+      const pipeToDirections = pipeToDirectionDict[currentValue];
+      const directionIndex = pipeToDirections.indexOf(direction.name);
+      if (directionIndex < 0) {
+        // direction is not valid from the pipe we are moving from
+        return false;
+      }
+    }
+
+    // the pipe at the direction makes sense to move to
     const value = pipes[direction.index[0]][direction.index[1]];
-    const viable = direction.viableChars.indexOf(value) > -1;
+    const viable = directiontoPipeDict[direction.name].indexOf(value) > -1;
 
     return viable;
   };
@@ -133,7 +161,7 @@ export default function Day10() {
   return (
     <Puzzle
       handleGetResults={() => processData(data)}
-      handleExampleGetResults={() => processData(exampleData)}
+      handleExampleGetResults={() => processData(exampleData2)}
       day={day}
       results={parts}
     ></Puzzle>
@@ -147,7 +175,7 @@ export default function Day10() {
   ) {
     const startDirections = getDirections(start);
     const viableDirections = startDirections.map((d) =>
-      isDirectionViable(d, pipes, rowCount, columnCount, undefined),
+      isDirectionViable(d, pipes, rowCount, columnCount, undefined, ""),
     );
 
     const startingPipe = getStartingPipe(viableDirections);
@@ -158,26 +186,21 @@ export default function Day10() {
   function getDirections(currentPosition: [number, number]): direction[] {
     const n: direction = {
       index: [currentPosition[0] - 1, currentPosition[1]],
-      viableChars: nViable,
       name: "n",
     };
     const e: direction = {
       index: [currentPosition[0], currentPosition[1] + 1],
-      viableChars: eViable,
       name: "e",
     };
     const s: direction = {
       index: [currentPosition[0] + 1, currentPosition[1]],
-      viableChars: sViable,
       name: "s",
     };
     const w: direction = {
       index: [currentPosition[0], currentPosition[1] - 1],
-      viableChars: wViable,
       name: "w",
     };
     const directions = [n, e, s, w];
-    console.log(directions);
     return directions;
   }
 
@@ -189,7 +212,7 @@ export default function Day10() {
       const splitRow = row.split("");
       pipes.push(splitRow);
 
-      let columnIndex = splitRow.indexOf("S");
+      const columnIndex = splitRow.indexOf("S");
       if (columnIndex > -1) {
         start = [rowIndex, columnIndex];
       }
