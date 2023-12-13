@@ -28,6 +28,18 @@ export default function Day10() {
     ".L--J.L--J.",
     "...........",
   ];
+  const exampleData4 = [
+    ".F----7F7F7F7F-7....",
+    ".|F--7||||||||FJ....",
+    ".||.FJ||||||||L7....",
+    "FJL7L7LJLJ||LJ.L-7..",
+    "L--J.L7...LJS7F-7L7.",
+    "....F-J..F7FJ|L7L7L7",
+    "....L7.F7||L7|.L7L7|",
+    ".....|FJLJ|FJ|F7|.LJ",
+    "....FJL-7.||.||||...",
+    "....L---J.LJ.LJLJ...",
+  ];
   const directiontoPipeDict: { [key: string]: [string, string, string] } = {
     n: ["|", "F", "7"],
     e: ["-", "J", "7"],
@@ -50,6 +62,11 @@ export default function Day10() {
     name: string;
   };
 
+  type pipe = {
+    index: [number, number];
+    direction: number;
+  };
+
   const processData = (data: string[] | undefined) => {
     if (data) {
       const rowCount = data.length;
@@ -64,15 +81,77 @@ export default function Day10() {
         clockwise,
         pipeLoop,
         maxDistance,
-      }: { clockwise: boolean; pipeLoop: number[][]; maxDistance: number } =
+      }: { clockwise: boolean; pipeLoop: pipe[]; maxDistance: number } =
         getMaxDistance(start, pipes, rowCount, columnCount);
 
-      console.log(clockwise);
+      console.log("clockwise?: " + clockwise);
+      console.log("pipeloop");
       console.log(pipeLoop);
+
+      const innerPoints = new Set<string>();
+      const pipeLoopStringIndexes = new Set(
+        pipeLoop.map((pipe) => pipe.index[0] + "," + pipe.index[1]),
+      );
+      console.log(pipeLoopStringIndexes);
+
+      pipeLoop.forEach((pipe) => {
+        const pipeValue = pipes[pipe.index[0]][pipe.index[1]];
+        console.log("pipevalue: " + pipeValue);
+        console.log(d[pipe.direction]);
+        if (pipeValue === "-") {
+          let sign = 0;
+          if (
+            (pipe.direction == 1 && clockwise) ||
+            (pipe.direction == 3 && !clockwise)
+          ) {
+            sign = 1;
+          } else if (
+            (pipe.direction == 3 && clockwise) ||
+            (pipe.direction == 1 && !clockwise)
+          ) {
+            sign = -1;
+          }
+
+          let currentPipeRowIndex = pipe.index[0] + sign;
+          let currentPipeIndex = currentPipeRowIndex + "," + pipe.index[1];
+          while (!pipeLoopStringIndexes.has(currentPipeIndex)) {
+            console.log("added to inner points: " + currentPipeIndex);
+            innerPoints.add(currentPipeIndex);
+            currentPipeRowIndex += sign;
+            currentPipeIndex = currentPipeRowIndex + "," + pipe.index[1];
+          }
+        }
+
+        if (pipeValue == "|") {
+          let sign = 0;
+          if (
+            (pipe.direction == 0 && clockwise) ||
+            (pipe.direction == 2 && !clockwise)
+          ) {
+            sign = 1;
+          } else if (
+            (pipe.direction == 2 && clockwise) ||
+            (pipe.direction == 0 && !clockwise)
+          ) {
+            sign = -1;
+          }
+
+          let currentPipeColumnIndex = pipe.index[1] + sign;
+          let currentPipeIndex = pipe.index[0] + "," + currentPipeColumnIndex;
+          while (!pipeLoopStringIndexes.has(currentPipeIndex)) {
+            console.log("added to inner points: " + currentPipeIndex);
+            innerPoints.add(currentPipeIndex);
+            currentPipeColumnIndex += sign;
+            currentPipeIndex = pipe.index[0] + "," + currentPipeColumnIndex;
+          }
+        }
+      });
+
+      const innerPointCount = innerPoints.size;
 
       setParts({
         part1: maxDistance,
-        part2: 0,
+        part2: innerPointCount,
       });
     }
   };
@@ -142,7 +221,7 @@ export default function Day10() {
   return (
     <Puzzle
       handleGetResults={() => processData(data)}
-      handleExampleGetResults={() => processData(exampleData3)}
+      handleExampleGetResults={() => processData(exampleData4)}
       day={day}
       results={parts}
     ></Puzzle>
@@ -160,8 +239,7 @@ export default function Day10() {
     let previousPosition: [number, number];
     let leftCount = 0;
     let rightCount = 0;
-    let pipeLoop: number[][] = [];
-    pipeLoop.push(start);
+    let pipeLoop: pipe[] = [];
 
     while (!startFound) {
       const currentValue = pipes[currentPosition[0]][currentPosition[1]];
@@ -178,15 +256,21 @@ export default function Day10() {
         ),
       );
 
-      const viableIndex = viable.indexOf(true);
-      const viableDirection = directions[viableIndex];
+      const direction = viable.indexOf(true);
+      const viableDirection = directions[direction];
 
       previousPosition = currentPosition;
       currentPosition = viableDirection.index;
-      pipeLoop.push(currentPosition);
+
+      const currentPipe: pipe = {
+        index: currentPosition,
+        direction: direction,
+      };
+      pipeLoop.push(currentPipe);
+
       const [pipeLeftCount, pipeRightCount] = getCornerCount(
         currentPosition,
-        viableIndex,
+        direction,
         pipes,
       );
       leftCount += pipeLeftCount;
@@ -212,12 +296,16 @@ export default function Day10() {
     if (pipe)
       switch (direction) {
         case 0:
+          // north
           return [Number(pipe === "7"), Number(pipe === "F")];
         case 1:
+          // east
           return [Number(pipe === "J"), Number(pipe === "7")];
         case 2:
+          // south
           return [Number(pipe === "L"), Number(pipe === "J")];
         case 3:
+          // west
           return [Number(pipe === "F"), Number(pipe === "L")];
         default:
           console.log("OH NO WE HAVE A CORNER PROBLEM");
