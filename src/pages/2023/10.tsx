@@ -17,6 +17,17 @@ export default function Day10() {
   }).data;
   const exampleData: string[] = [".....", ".S-7.", ".|.|.", ".L-J.", "....."];
   const exampleData2 = ["..F7.", ".FJ|.", "SJ.L7", "|F--J", "LJ..."];
+  const exampleData3 = [
+    "...........",
+    ".S-------7.",
+    ".|F-----7|.",
+    ".||.....||.",
+    ".||.....||.",
+    ".|L-7.F-J|.",
+    ".|..|.|..|.",
+    ".L--J.L--J.",
+    "...........",
+  ];
   const directiontoPipeDict: { [key: string]: [string, string, string] } = {
     n: ["|", "F", "7"],
     e: ["-", "J", "7"],
@@ -31,6 +42,8 @@ export default function Day10() {
     "7": ["s", "w"],
     F: ["s", "e"],
   };
+
+  const d = ["n", "e", "s", "w"];
 
   type direction = {
     index: [number, number];
@@ -52,9 +65,13 @@ export default function Day10() {
       let stepCount = 0;
       let previousPosition: [number, number];
       let horriblyWrong = false;
+      let leftCount = 0;
+      let rightCount = 0;
 
       while (!startFound && !horriblyWrong) {
+        console.log("-----");
         const currentValue = pipes[currentPosition[0]][currentPosition[1]];
+
         const directions = getDirections(currentPosition);
         const viable = directions.map((d) =>
           isDirectionViable(
@@ -70,6 +87,7 @@ export default function Day10() {
         const viableIndex = viable.indexOf(true);
         const viableDirection = directions[viableIndex];
         const viableCount = viable.filter((x) => x).length;
+        console.log("direction: " + d[viableIndex]);
         if (
           viableCount != 1 &&
           !(currentPosition[0] == start[0] && currentPosition[1] == start[1])
@@ -80,11 +98,32 @@ export default function Day10() {
 
         previousPosition = currentPosition;
         currentPosition = viableDirection.index;
+        const [pipeLeftCount, pipeRightCount] = getCornerCount(
+          currentPosition,
+          viableIndex,
+          pipes,
+        );
+        leftCount += pipeLeftCount;
+        rightCount += pipeRightCount;
+
+        if (pipeLeftCount) {
+          console.log("LEFT");
+        }
+        if (pipeRightCount) {
+          console.log("RIGHT");
+        }
 
         startFound =
           currentPosition[0] === start[0] && currentPosition[1] === start[1];
 
         stepCount++;
+      }
+
+      console.log(" - - - - ");
+      if (leftCount > rightCount) {
+        console.log("anti clockwise");
+      } else {
+        console.log("clockwise ");
       }
 
       const maxDistance = stepCount / 2;
@@ -161,11 +200,34 @@ export default function Day10() {
   return (
     <Puzzle
       handleGetResults={() => processData(data)}
-      handleExampleGetResults={() => processData(exampleData2)}
+      handleExampleGetResults={() => processData(exampleData3)}
       day={day}
       results={parts}
     ></Puzzle>
   );
+
+  function getCornerCount(
+    currentPosition: [number, number],
+    direction: Number,
+    pipes: string[][],
+  ): number[] {
+    const pipe = pipes[currentPosition[0]][currentPosition[1]];
+    console.log("pipe: " + pipe);
+    if (pipe)
+      switch (direction) {
+        case 0:
+          return [Number(pipe === "7"), Number(pipe === "F")];
+        case 1:
+          return [Number(pipe === "J"), Number(pipe === "7")];
+        case 2:
+          return [Number(pipe === "L"), Number(pipe === "J")];
+        case 3:
+          return [Number(pipe === "F"), Number(pipe === "L")];
+        default:
+          console.log("OH NO WE HAVE A CORNER PROBLEM");
+          return [0, 0];
+      }
+  }
 
   function replaceStartingPipe(
     start: [number, number],
