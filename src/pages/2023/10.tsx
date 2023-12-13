@@ -64,11 +64,10 @@ export default function Day10() {
       let startFound = false;
       let stepCount = 0;
       let previousPosition: [number, number];
-      let horriblyWrong = false;
       let leftCount = 0;
       let rightCount = 0;
 
-      while (!startFound && !horriblyWrong) {
+      while (!startFound) {
         console.log("-----");
         const currentValue = pipes[currentPosition[0]][currentPosition[1]];
 
@@ -86,15 +85,7 @@ export default function Day10() {
 
         const viableIndex = viable.indexOf(true);
         const viableDirection = directions[viableIndex];
-        const viableCount = viable.filter((x) => x).length;
         console.log("direction: " + d[viableIndex]);
-        if (
-          viableCount != 1 &&
-          !(currentPosition[0] == start[0] && currentPosition[1] == start[1])
-        ) {
-          horriblyWrong = true;
-          continue;
-        }
 
         previousPosition = currentPosition;
         currentPosition = viableDirection.index;
