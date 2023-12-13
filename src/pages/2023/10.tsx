@@ -60,64 +60,15 @@ export default function Day10() {
 
       replaceStartingPipe(start, pipes, rowCount, columnCount);
 
-      let currentPosition = start;
-      let startFound = false;
-      let stepCount = 0;
-      let previousPosition: [number, number];
-      let leftCount = 0;
-      let rightCount = 0;
+      var {
+        clockwise,
+        pipeLoop,
+        maxDistance,
+      }: { clockwise: boolean; pipeLoop: number[][]; maxDistance: number } =
+        getMaxDistance(start, pipes, rowCount, columnCount);
 
-      while (!startFound) {
-        console.log("-----");
-        const currentValue = pipes[currentPosition[0]][currentPosition[1]];
-
-        const directions = getDirections(currentPosition);
-        const viable = directions.map((d) =>
-          isDirectionViable(
-            d,
-            pipes,
-            rowCount,
-            columnCount,
-            previousPosition,
-            currentValue,
-          ),
-        );
-
-        const viableIndex = viable.indexOf(true);
-        const viableDirection = directions[viableIndex];
-        console.log("direction: " + d[viableIndex]);
-
-        previousPosition = currentPosition;
-        currentPosition = viableDirection.index;
-        const [pipeLeftCount, pipeRightCount] = getCornerCount(
-          currentPosition,
-          viableIndex,
-          pipes,
-        );
-        leftCount += pipeLeftCount;
-        rightCount += pipeRightCount;
-
-        if (pipeLeftCount) {
-          console.log("LEFT");
-        }
-        if (pipeRightCount) {
-          console.log("RIGHT");
-        }
-
-        startFound =
-          currentPosition[0] === start[0] && currentPosition[1] === start[1];
-
-        stepCount++;
-      }
-
-      console.log(" - - - - ");
-      if (leftCount > rightCount) {
-        console.log("anti clockwise");
-      } else {
-        console.log("clockwise ");
-      }
-
-      const maxDistance = stepCount / 2;
+      console.log(clockwise);
+      console.log(pipeLoop);
 
       setParts({
         part1: maxDistance,
@@ -197,13 +148,67 @@ export default function Day10() {
     ></Puzzle>
   );
 
+  function getMaxDistance(
+    start: [number, number],
+    pipes: string[][],
+    rowCount: number,
+    columnCount: number,
+  ) {
+    let currentPosition = start;
+    let startFound = false;
+    let stepCount = 0;
+    let previousPosition: [number, number];
+    let leftCount = 0;
+    let rightCount = 0;
+    let pipeLoop: number[][] = [];
+    pipeLoop.push(start);
+
+    while (!startFound) {
+      const currentValue = pipes[currentPosition[0]][currentPosition[1]];
+
+      const directions = getDirections(currentPosition);
+      const viable = directions.map((d) =>
+        isDirectionViable(
+          d,
+          pipes,
+          rowCount,
+          columnCount,
+          previousPosition,
+          currentValue,
+        ),
+      );
+
+      const viableIndex = viable.indexOf(true);
+      const viableDirection = directions[viableIndex];
+
+      previousPosition = currentPosition;
+      currentPosition = viableDirection.index;
+      pipeLoop.push(currentPosition);
+      const [pipeLeftCount, pipeRightCount] = getCornerCount(
+        currentPosition,
+        viableIndex,
+        pipes,
+      );
+      leftCount += pipeLeftCount;
+      rightCount += pipeRightCount;
+
+      startFound =
+        currentPosition[0] === start[0] && currentPosition[1] === start[1];
+
+      stepCount++;
+    }
+
+    const clockwise = rightCount > leftCount;
+    const maxDistance = stepCount / 2;
+    return { clockwise, pipeLoop, maxDistance };
+  }
+
   function getCornerCount(
     currentPosition: [number, number],
     direction: Number,
     pipes: string[][],
   ): number[] {
     const pipe = pipes[currentPosition[0]][currentPosition[1]];
-    console.log("pipe: " + pipe);
     if (pipe)
       switch (direction) {
         case 0:
