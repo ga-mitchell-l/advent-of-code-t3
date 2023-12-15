@@ -31,24 +31,38 @@ export default function Day11() {
   const processData = (data: string[] | undefined) => {
     if (data) {
       const expanded = getExpandedUniverse(data);
+      const galaxies: number[][] = getGalaxies(expanded);
 
-      console.log(expanded);
+      console.log(galaxies);
 
       setParts({
         part1: 0,
         part2: 0,
       });
     }
-  };
 
-  return (
-    <Puzzle
-      handleGetResults={() => processData(data)}
-      handleExampleGetResults={() => processData(exampleData)}
-      day={day}
-      results={parts}
-    ></Puzzle>
-  );
+    return (
+      <Puzzle
+        handleGetResults={() => processData(data)}
+        handleExampleGetResults={() => processData(exampleData)}
+        day={day}
+        results={parts}
+      ></Puzzle>
+    );
+    function getGalaxies(expanded: string[][]): number[][] {
+      const galaxies: number[][] = [];
+
+      for (let row = 0; row < expanded.length; row++) {
+        const expandedRow = expanded[row];
+        for (let column = 0; column < expandedRow.length; column++) {
+          if (expandedRow[column] == "#") {
+            galaxies.push([row, column]);
+          }
+        }
+      }
+      return galaxies;
+    }
+  };
 
   function getExpandedUniverse(data: string[]) {
     const unexpanded: string[][] = [];
