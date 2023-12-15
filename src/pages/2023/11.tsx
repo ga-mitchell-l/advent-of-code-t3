@@ -37,25 +37,13 @@ export default function Day11() {
       });
 
       const emptyRows = getEmptyRows(universe);
-      console.log(emptyRows);
-
       const transposedUniverse = transposeArray(universe);
       const emptyColumns = getEmptyRows(transposedUniverse);
-      console.log(emptyColumns);
+      const galaxies = getGalaxies(universe);
+      const combinationSet = getGalaxyCombinations(galaxies);
 
       const part1ExpansionFactor = 2;
       const part2ExpansionFactor = 1_000_000;
-
-      const galaxies = getGalaxies(universe);
-      // const galaxyKeys = Object.keys(galaxies);
-      // const combinations = galaxyKeys.flatMap((d) =>
-      //   galaxyKeys.map(
-      //     (v) =>
-      //       Math.min(Number(d), Number(v)) +
-      //       "," +
-      //       Math.max(Number(d), Number(v)),
-      //   ),
-      // );
 
       const expandedGalaxies: number[][] = getExpandedGalaxies(
         galaxies,
@@ -64,34 +52,19 @@ export default function Day11() {
         part1ExpansionFactor,
       );
 
-      const foo = getExpandedUniverse(data);
-      const bar = getGalaxies(foo);
-      console.log("original galaxies");
-      console.log(bar);
-      console.log("new galaxies");
-      console.log(expandedGalaxies);
+      const expandedGalaxiesPart2 = getExpandedGalaxies(
+        galaxies,
+        emptyRows,
+        emptyColumns,
+        part2ExpansionFactor,
+      );
 
-      // const combinationSet = new Set(combinations); // remove duplicates
-      // let distanceSum = 0;
-      // combinationSet.forEach((combination) => {
-      //   const [galA, galB] = combination.split(",");
-      //   if (galA == galB) {
-      //     return;
-      //   }
-
-      //   const galAIndexes = galaxies[galA];
-      //   const galBIndexes = galaxies[galB];
-
-      //   const rowDistance = Math.abs(galAIndexes[0] - galBIndexes[0]);
-      //   const columnDistance = Math.abs(galAIndexes[1] - galBIndexes[1]);
-
-      //   const distance = rowDistance + columnDistance;
-      //   distanceSum += distance;
-      // });
+      let part1DistanceSum = getDistance(combinationSet, expandedGalaxies);
+      let part2DistanceSum = getDistance(combinationSet, expandedGalaxiesPart2);
 
       setParts({
-        part1: 0,
-        part2: 0,
+        part1: part1DistanceSum,
+        part2: part2DistanceSum,
       });
     }
   };
@@ -104,6 +77,42 @@ export default function Day11() {
       results={parts}
     ></Puzzle>
   );
+
+  function getDistance(combinationSet: Set<string>, galaxies: number[][]) {
+    let distanceSum = 0;
+    combinationSet.forEach((combination) => {
+      const [galA, galB] = combination.split(",");
+      if (galA == galB) {
+        return;
+      }
+      const galARowColumn = galaxies[galA];
+      const galBRowColumn = galaxies[galB];
+
+      const rowDistance = Math.abs(galARowColumn[0] - galBRowColumn[0]);
+      const columnDistance = Math.abs(galARowColumn[1] - galBRowColumn[1]);
+
+      const distance = rowDistance + columnDistance;
+      distanceSum += distance;
+    });
+    return distanceSum;
+  }
+
+  function getGalaxyCombinations(expandedGalaxies: number[][]) {
+    const indexArray = Array.from(
+      { length: expandedGalaxies.length },
+      (value, index) => index,
+    );
+    console.log(indexArray);
+
+    const combinations = indexArray.flatMap((d) =>
+      indexArray.map(
+        (v) =>
+          Math.min(Number(d), Number(v)) + "," + Math.max(Number(d), Number(v)),
+      ),
+    );
+    const combinationSet = new Set(combinations); // remove duplicates
+    return combinationSet;
+  }
 
   function getExpandedGalaxies(
     galaxies: number[][],
