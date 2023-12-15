@@ -40,6 +40,7 @@ export default function Day10() {
     "....FJL-7.||.||||...",
     "....L---J.LJ.LJLJ...",
   ];
+  const exampleDataLizzy = [".S-7", ".|.|", "FJ.|", "J..|", "L--7"];
   const directiontoPipeDict: { [key: string]: [string, string, string] } = {
     n: ["|", "F", "7"],
     e: ["-", "J", "7"],
@@ -85,8 +86,6 @@ export default function Day10() {
         getMaxDistance(start, pipes, rowCount, columnCount);
 
       console.log("clockwise?: " + clockwise);
-      console.log("pipeloop");
-      console.log(pipeLoop);
 
       const innerPoints = new Set<string>();
       const pipeLoopStringIndexes = new Set(
@@ -112,14 +111,7 @@ export default function Day10() {
             sign = -1;
           }
 
-          let currentPipeRowIndex = pipe.index[0] + sign;
-          let currentPipeIndex = currentPipeRowIndex + "," + pipe.index[1];
-          while (!pipeLoopStringIndexes.has(currentPipeIndex)) {
-            console.log("added to inner points: " + currentPipeIndex);
-            innerPoints.add(currentPipeIndex);
-            currentPipeRowIndex += sign;
-            currentPipeIndex = currentPipeRowIndex + "," + pipe.index[1];
-          }
+          findPointsByRow(pipe, sign, pipeLoopStringIndexes, innerPoints);
         }
 
         if (pipeValue == "|") {
@@ -136,15 +128,35 @@ export default function Day10() {
             sign = -1;
           }
 
-          let currentPipeColumnIndex = pipe.index[1] + sign;
-          let currentPipeIndex = pipe.index[0] + "," + currentPipeColumnIndex;
-          while (!pipeLoopStringIndexes.has(currentPipeIndex)) {
-            console.log("added to inner points: " + currentPipeIndex);
-            innerPoints.add(currentPipeIndex);
-            currentPipeColumnIndex += sign;
-            currentPipeIndex = pipe.index[0] + "," + currentPipeColumnIndex;
-          }
+          findPointsByColumn(pipe, sign, pipeLoopStringIndexes, innerPoints);
         }
+
+        // if (pipeValue == "J") {
+        //   if (clockwise) {
+        //     // row direction
+        //     let currentPipeRowIndex = pipe.index[0] - 1;
+        //     let currentPipeIndex = currentPipeRowIndex + "," + pipe.index[1];
+
+        //     while (!pipeLoopStringIndexes.has(currentPipeIndex)) {
+        //       console.log("added to inner points: " + currentPipeIndex);
+        //       innerPoints.add(currentPipeIndex);
+        //       currentPipeRowIndex--;
+        //       currentPipeIndex = currentPipeRowIndex + "," + pipe.index[1];
+        //     }
+
+        //     //column direction
+
+        //     let currentPipeColumnIndex = pipe.index[1] + 1;
+        //     currentPipeIndex = pipe.index[0] + "," + currentPipeColumnIndex;
+
+        //     while (!pipeLoopStringIndexes.has(currentPipeIndex)) {
+        //       console.log("added to inner points: " + currentPipeIndex);
+        //       innerPoints.add(currentPipeIndex);
+        //       currentPipeColumnIndex++;
+        //       currentPipeIndex = pipe.index[0] + "," + currentPipeColumnIndex;
+        //     }
+        //   }
+        // }
       });
 
       const innerPointCount = innerPoints.size;
@@ -221,11 +233,43 @@ export default function Day10() {
   return (
     <Puzzle
       handleGetResults={() => processData(data)}
-      handleExampleGetResults={() => processData(exampleData4)}
+      handleExampleGetResults={() => processData(exampleData)}
       day={day}
       results={parts}
     ></Puzzle>
   );
+
+  function findPointsByColumn(
+    pipe: { index: [number, number]; direction: number },
+    sign: number,
+    pipeLoopStringIndexes: Set<string>,
+    innerPoints: Set<string>,
+  ) {
+    let currentPipeColumnIndex = pipe.index[1] + sign;
+    let currentPipeIndex = pipe.index[0] + "," + currentPipeColumnIndex;
+    while (!pipeLoopStringIndexes.has(currentPipeIndex)) {
+      console.log("added to inner points: " + currentPipeIndex);
+      innerPoints.add(currentPipeIndex);
+      currentPipeColumnIndex += sign;
+      currentPipeIndex = pipe.index[0] + "," + currentPipeColumnIndex;
+    }
+  }
+
+  function findPointsByRow(
+    pipe: { index: [number, number]; direction: number },
+    sign: number,
+    pipeLoopStringIndexes: Set<string>,
+    innerPoints: Set<string>,
+  ) {
+    let currentPipeRowIndex = pipe.index[0] + sign;
+    let currentPipeIndex = currentPipeRowIndex + "," + pipe.index[1];
+    while (!pipeLoopStringIndexes.has(currentPipeIndex)) {
+      console.log("added to inner points: " + currentPipeIndex);
+      innerPoints.add(currentPipeIndex);
+      currentPipeRowIndex += sign;
+      currentPipeIndex = currentPipeRowIndex + "," + pipe.index[1];
+    }
+  }
 
   function getMaxDistance(
     start: [number, number],
