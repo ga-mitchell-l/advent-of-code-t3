@@ -33,10 +33,37 @@ export default function Day11() {
       const expanded = getExpandedUniverse(data);
       const galaxies = getGalaxies(expanded);
 
-      console.log(galaxies);
+      const galaxyKeys = Object.keys(galaxies);
+
+      const combinations = galaxyKeys.flatMap((d) =>
+        galaxyKeys.map(
+          (v) =>
+            Math.min(Number(d), Number(v)) +
+            "," +
+            Math.max(Number(d), Number(v)),
+        ),
+      );
+
+      const combinationSet = new Set(combinations); // remove duplicates
+      let distanceSum = 0;
+      combinationSet.forEach((combination) => {
+        const [galA, galB] = combination.split(",");
+        if (galA == galB) {
+          return;
+        }
+
+        const galAIndexes = galaxies[galA];
+        const galBIndexes = galaxies[galB];
+
+        const rowDistance = Math.abs(galAIndexes[0] - galBIndexes[0]);
+        const columnDistance = Math.abs(galAIndexes[1] - galBIndexes[1]);
+
+        const distance = rowDistance + columnDistance;
+        distanceSum += distance;
+      });
 
       setParts({
-        part1: 0,
+        part1: distanceSum,
         part2: 0,
       });
     }
