@@ -31,7 +31,7 @@ export default function Day11() {
   const processData = (data: string[] | undefined) => {
     if (data) {
       const expanded = getExpandedUniverse(data);
-      const galaxies: number[][] = getGalaxies(expanded);
+      const galaxies = getGalaxies(expanded);
 
       console.log(galaxies);
 
@@ -40,29 +40,34 @@ export default function Day11() {
         part2: 0,
       });
     }
+  };
 
-    return (
-      <Puzzle
-        handleGetResults={() => processData(data)}
-        handleExampleGetResults={() => processData(exampleData)}
-        day={day}
-        results={parts}
-      ></Puzzle>
-    );
-    function getGalaxies(expanded: string[][]): number[][] {
-      const galaxies: number[][] = [];
+  return (
+    <Puzzle
+      handleGetResults={() => processData(data)}
+      handleExampleGetResults={() => processData(exampleData)}
+      day={day}
+      results={parts}
+    ></Puzzle>
+  );
 
-      for (let row = 0; row < expanded.length; row++) {
-        const expandedRow = expanded[row];
-        for (let column = 0; column < expandedRow.length; column++) {
-          if (expandedRow[column] == "#") {
-            galaxies.push([row, column]);
-          }
+  function getGalaxies(expanded: string[][]): {
+    [key: number]: [number, number];
+  } {
+    const galaxies: { [key: number]: [number, number] } = {};
+
+    let galaxyCount = 0;
+    for (let row = 0; row < expanded.length; row++) {
+      const expandedRow = expanded[row];
+      for (let column = 0; column < expandedRow.length; column++) {
+        if (expandedRow[column] == "#") {
+          galaxies[galaxyCount] = [row, column];
+          galaxyCount++;
         }
       }
-      return galaxies;
     }
-  };
+    return galaxies;
+  }
 
   function getExpandedUniverse(data: string[]) {
     const unexpanded: string[][] = [];
